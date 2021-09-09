@@ -1,0 +1,8 @@
+# Pycache 
+__pycache__
+
+# Configuration Files
+cockroachdb/config.json
+
+# Example Transactions 
+cockroachdb/xacts/example.py
