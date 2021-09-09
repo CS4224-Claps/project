@@ -240,4 +240,3 @@ def execute(conn, io_line, data_lines=[]):
         logging.debug("new_order: status message: %s", cur.statusmessage)
 
     conn.commit()
-    
