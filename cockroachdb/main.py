@@ -14,9 +14,11 @@ def main():
 
     conn = psycopg2.connect("postgresql://cs4224:cs4224@localhost:26257/a_raw?sslmode=require")
 
+    """
     # Test 2.1 
     io_line, data_lines = parse("N,1,1,1,1", ["1,1,1"])
     new_order_execute(conn, io_line, data_lines)
+    """
 
     conn.close()
 
