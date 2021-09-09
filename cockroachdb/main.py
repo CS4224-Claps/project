@@ -12,7 +12,7 @@ def main():
 
     logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
 
-    conn = psycopg2.connect("postgresql://cs4224:cs4224@localhost:26257/a_raw?sslmode=require")
+    conn = psycopg2.connect(opt.dsn)
 
     """
     # Test 2.1 
