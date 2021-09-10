@@ -49,51 +49,41 @@ def execute(conn, io_line, data_lines=[]):
 
         # (5) Create New Order-Lines 
         ordered_items = []
+        ordered_items_pretty = []
 
         for i in range(int(num_items)):
             item_number, supplier_warehouse, quantity = data_lines[i]
             quantity = float(quantity)
 
             # (5a) Get S_QUANTITY 
-            sql = """
-                SELECT S_QUANTITY 
-                FROM Stock 
-                WHERE S_W_ID = %s AND S_I_ID = %s; 
-            """
-            cur.execute(sql, 
-                (w_id, d_id)
-            )
-            row = cur.fetchone()
-            s_quantity = float(row[0])
-
-            # (5b) Get ADJUSTED_QTY
-            adjusted_qty = s_quantity - quantity
-
-            # (5c) If ADJUSTED_QTY < 10: ADJUSTED_QTY += 100
-            if adjusted_qty < 10:
-                adjusted_qty += 100
-
+            # (5b) Set ADJUSTED_QTY 
+            # (5c) Set ADJUSTED_QTY += 100 IF ADJUSTED_QTY < 10
             # (5d) Update the stock record 
             sql = """
                 UPDATE Stock 
-                    SET S_QUANTITY = %s, 
-                    S_YTD = S_YTD + %s, 
-                    S_ORDER_CNT = S_ORDER_CNT + 1 
-                    WHERE S_W_ID = %s AND S_I_ID = %s; 
+                    SET S_QUANTITY = CASE 
+                        WHEN S_QUANTITY - %(qty)s < 10 THEN S_QUANTITY + 100 - %(qty)s 
+                        ELSE S_QUANTITY - %(qty)s 
+                    END, 
+                    S_YTD = S_YTD + %(qty)s, 
+                    S_ORDER_CNT = S_ORDER_CNT + 1,
+                    S_REMOTE_CNT = CASE 
+                        WHEN %(supplier)s <> %(w_id)s THEN S_REMOTE_CNT + 1
+                        ELSE S_REMOTE_CNT
+                    END 
+                    WHERE S_W_ID = %(w_id)s AND S_I_ID = %(i_id)s
+                    RETURNING S_QUANTITY;
             """
             cur.execute(sql, 
-                (adjusted_qty, quantity, w_id, d_id)
+                {  
+                    "qty": quantity, 
+                    "supplier": supplier_warehouse, 
+                    "w_id": w_id, 
+                    "i_id": item_number
+                }
             )
-
-            if supplier_warehouse != w_id:
-                sql = """
-                    UPDATE Stock 
-                        SET S_REMOTE_CNT = S_REMOTE_CNT + 1, 
-                        WHERE S_W_ID = %s AND S_I_ID = %s; 
-                """
-                cur.execute(sql, 
-                    (w_id, d_id)
-                )
+            row = cur.fetchone()
+            adjusted_qty = float(row[0])
 
             # (5e) Update ITEM_AMOUNT 
             sql = """
@@ -112,27 +102,25 @@ def execute(conn, io_line, data_lines=[]):
             # (5f) Update TOTAL_AMOUNT 
             total_amount += item_amount
 
-            # (5g) Create new order-line 
-            ol_dist_info = "S_DIST_{}".format(d_id)
-            sql = """
-                INSERT INTO OrderLine (OL_W_ID, OL_D_ID, OL_O_ID, 
-                    OL_NUMBER, OL_I_ID, OL_DELIVERY_D, OL_AMOUNT, 
-                    OL_SUPPLY_W_ID, OL_QUANTITY, OL_DIST_INFO) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s); 
-            """
-            cur.execute(sql, 
-                (w_id, d_id, o_id, i, item_number, None, item_amount, 
-                    supplier_warehouse, quantity, S_DIST_{}.format(d_id))
-            )            
+            # (5g) Create new order-lines
+            ordered_items.append((w_id, d_id, o_id, i, item_number, None, item_amount, 
+                supplier_warehouse, quantity, "S_DIST_{:02d}".format(int(d_id))))
 
-            ordered_items.append((
-                item_number, 
-                i_name, 
-                supplier_warehouse, 
-                quantity, 
-                item_amount, 
-                adjusted_qty
-            ))
+            # Append for output 
+            ordered_items_pretty.append((item_number, i_name, supplier_warehouse, 
+                quantity, item_amount, adjusted_qty))
+
+        # Add the new order-lines 
+        sql = """
+            INSERT INTO OrderLine (OL_W_ID, OL_D_ID, OL_O_ID, 
+                OL_NUMBER, OL_I_ID, OL_DELIVERY_D, OL_AMOUNT, 
+                OL_SUPPLY_W_ID, OL_QUANTITY, OL_DIST_INFO) 
+                VALUES
+        """
+
+        items_values = ",".join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", item).decode("utf-8") 
+            for item in ordered_items)
+        cur.execute(sql + items_values)            
             
         # (6) Update TOTAL_AMOUNT 
         sql = """
@@ -182,13 +170,13 @@ def execute(conn, io_line, data_lines=[]):
         c_last, c_credit = row[0], row[1] 
 
         # (7) Output the following information: 
-        print(1. Customer: , w_id, d_id, c_id, c_last, c_credit, c_discount)
-        print(2. Warehouse: , w_tax, d_tax)
-        print(3. Order: , o_id, o_entry_d)
-        print(4. Items: , num_items, total_amount)
-        print(5. Ordered Items: )
+        print("1. Customer: ", w_id, d_id, c_id, c_last, c_credit, c_discount)
+        print("2. Warehouse: ", w_tax, d_tax)
+        print("3. Order: ", o_id, o_entry_d)
+        print("4. Items: ", num_items, total_amount)
+        print("5. Ordered Items: ")
 
-        for ordered_item in ordered_items:
+        for ordered_item in ordered_items_pretty:
             print(ordered_item)
 
         logging.debug("new_order: status message: %s", cur.statusmessage)

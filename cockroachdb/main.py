@@ -14,11 +14,9 @@ def main():
 
     conn = psycopg2.connect(opt.dsn)
 
-    """
     # Test 2.1 
-    io_line, data_lines = parse("N,1,1,1,1", ["1,1,1"])
+    io_line, data_lines = parse("N,1,1,1,2", ["1,1,1","1,1,1"])
     new_order.execute(conn, io_line, data_lines)
-    """
 
     conn.close()
 
