@@ -173,7 +173,7 @@ def execute(conn, io_line, data_lines=[]):
         print("1. Customer: ", w_id, d_id, c_id, c_last, c_credit, c_discount)
         print("2. Warehouse: ", w_tax, d_tax)
         print("3. Order: ", o_id, o_entry_d)
-        print("4. Items: ", num_items, total_amount)
+        print("4. Items: ", num_items, round(total_amount,2))
         print("5. Ordered Items: ")
 
         for ordered_item in ordered_items_pretty:
