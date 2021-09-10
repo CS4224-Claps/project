@@ -16,13 +16,13 @@ def execute(conn, io_line, data_lines=[]):
             UPDATE District 
                 SET D_NEXT_O_ID = D_NEXT_O_ID + 1
                 WHERE D_W_ID = %s AND D_ID = %s
-                RETURNING D_NEXT_O_ID - 1;
+                RETURNING D_NEXT_O_ID - 1, D_TAX;
         """
         cur.execute(sql, 
             (w_id, d_id)
         )
         row = cur.fetchone()
-        o_id = int(row[0])
+        o_id, d_tax = int(row[0]), float(row[1])
 
         # (3) Create a new order 
         o_all_local = 1
@@ -124,17 +124,6 @@ def execute(conn, io_line, data_lines=[]):
             
         # (6) Update TOTAL_AMOUNT 
         sql = """
-            SELECT D_TAX 
-                FROM District 
-                WHERE D_W_ID = %s AND D_ID = %s; 
-        """
-        cur.execute(sql, 
-            (w_id, d_id)
-        )
-        row = cur.fetchone()
-        d_tax = float(row[0])
-
-        sql = """
             SELECT W_TAX 
                 FROM Warehouse 
                 WHERE W_ID = %s; 
@@ -146,7 +135,7 @@ def execute(conn, io_line, data_lines=[]):
         w_tax = float(row[0])
 
         sql = """
-            SELECT C_DISCOUNT 
+            SELECT C_DISCOUNT, C_LAST, C_CREDIT
                 FROM Customer 
                 WHERE C_W_ID = %s AND C_D_ID = %s AND C_ID = %s; 
         """
@@ -154,20 +143,9 @@ def execute(conn, io_line, data_lines=[]):
             (w_id, d_id, c_id)
         )
         row = cur.fetchone()
-        c_discount = float(row[0])
+        c_discount, c_last, c_credit = float(row[0]), row[1], row[2]
 
         total_amount = total_amount * (1.0 + d_tax + w_tax) * (1.0 - c_discount)
-
-        sql = """
-            SELECT C_LAST, C_CREDIT 
-                FROM Customer 
-                WHERE C_W_ID = %s AND C_D_ID = %s AND C_ID = %s; 
-        """
-        cur.execute(sql, 
-            (w_id, d_id, c_id)
-        )
-        row = cur.fetchone()
-        c_last, c_credit = row[0], row[1] 
 
         # (7) Output the following information: 
         print("1. Customer: ", w_id, d_id, c_id, c_last, c_credit, c_discount)
