@@ -43,7 +43,7 @@ def execute(conn, io_line):
         cust = cur.fetchone()
 
         # (4) Output the following information:
-        print("1. Customer info: ", cust)
+        print("1. Customer info: ", cust[:17])  # omits not requested fields
         print("2. Warehouse address : ", w_addr)
         print("3. District address: ", d_addr)
         print("4. Payment amount: ", pay_amt)
