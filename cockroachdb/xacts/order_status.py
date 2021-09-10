@@ -11,7 +11,7 @@ def execute(conn, io_line):
 
     with conn.cursor() as cur:
         get_cust_info = """
-            SELECT concat(C_FIRST, C_MIDDLE, C_LAST) as C_NAME, C_BALANCE
+            SELECT concat_ws(' ', C_FIRST, C_MIDDLE, C_LAST) as C_NAME, C_BALANCE
             FROM Customer
             WHERE C_W_ID = (%s) AND C_D_ID = (%s) AND C_ID = (%s)
         """
@@ -42,7 +42,7 @@ def execute(conn, io_line):
         print("3. Items: ")
 
         for item in items:
-            print(item)
+            print(*item)
 
         logging.debug("order_status: status message: %s", cur.statusmessage)
 
