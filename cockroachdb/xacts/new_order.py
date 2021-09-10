@@ -5,32 +5,24 @@ from utils.decorators import validate_command
 
 
 @validate_command("N")
-def new_order_execute(conn, io_line, data_lines=[]):
+def execute(conn, io_line, data_lines=[]):
     # Retrieve Data from IO Line 
     _, w_id, d_id, c_id, num_items = io_line
     
     with conn.cursor() as cur:
         # (1) Retrieve D_NEXT_O_ID given (W_ID, D_ID) 
-        sql = (
-            "SELECT D_NEXT_O_ID "
-            "FROM District  "
-            "WHERE D_W_ID = %s AND D_ID = %s; "
-        )
+        # (2) Update (W_ID, D_ID) by incrementing D_NEXT_O_ID by one 
+        sql = """
+            UPDATE District 
+                SET D_NEXT_O_ID = D_NEXT_O_ID + 1
+                WHERE D_W_ID = %s AND D_ID = %s
+                RETURNING D_NEXT_O_ID - 1;
+        """
         cur.execute(sql, 
             (w_id, d_id)
         )
         row = cur.fetchone()
-        d_next_o_id = row[0]
-
-        # (2) Update (W_ID, D_ID) by incrementing D_NEXT_O_ID by one 
-        sql = (
-            "UPDATE District "
-            "SET D_NEXT_O_ID = %s "
-            "WHERE D_W_ID = %s AND D_ID = %s; "
-        )
-        cur.execute(sql, 
-            (d_next_o_id, w_id, d_id)
-        )
+        o_id = int(row[0])
 
         # (3) Create a new order 
         o_all_local = 1
@@ -42,14 +34,14 @@ def new_order_execute(conn, io_line, data_lines=[]):
 
         o_entry_d = str(datetime.now(timezone.utc))
 
-        sql = (
-            "INSERT INTO Orders "
-            "(O_W_ID, O_D_ID, O_ID, O_C_ID, O_CARRIER_ID, "
-            "O_OL_CNT, O_ALL_LOCAL, O_ENTRY_D) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) "
-        )
+        sql = """
+            INSERT INTO Orders 
+                (O_W_ID, O_D_ID, O_ID, O_C_ID, O_CARRIER_ID, 
+                O_OL_CNT, O_ALL_LOCAL, O_ENTRY_D) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s) 
+        """
         cur.execute(sql, 
-            (w_id, d_id, d_next_o_id, c_id, None, num_items, o_all_local, o_entry_d)
+            (w_id, d_id, o_id, c_id, None, num_items, o_all_local, o_entry_d)
         )
 
         # (4) Initialize TOTAL_AMOUNT = 0
@@ -63,11 +55,11 @@ def new_order_execute(conn, io_line, data_lines=[]):
             quantity = float(quantity)
 
             # (5a) Get S_QUANTITY 
-            sql = (
-                "SELECT S_QUANTITY "
-                "FROM Stock "
-                "WHERE S_W_ID = %s AND S_I_ID = %s; "
-            )
+            sql = """
+                SELECT S_QUANTITY 
+                FROM Stock 
+                WHERE S_W_ID = %s AND S_I_ID = %s; 
+            """
             cur.execute(sql, 
                 (w_id, d_id)
             )
@@ -82,33 +74,33 @@ def new_order_execute(conn, io_line, data_lines=[]):
                 adjusted_qty += 100
 
             # (5d) Update the stock record 
-            sql = (
-                "UPDATE Stock "
-                "SET S_QUANTITY = %s, "
-                "S_YTD = S_YTD + %s, "
-                "S_ORDER_CNT = S_ORDER_CNT + 1 "
-                "WHERE S_W_ID = %s AND S_I_ID = %s; "
-            )
+            sql = """
+                UPDATE Stock 
+                    SET S_QUANTITY = %s, 
+                    S_YTD = S_YTD + %s, 
+                    S_ORDER_CNT = S_ORDER_CNT + 1 
+                    WHERE S_W_ID = %s AND S_I_ID = %s; 
+            """
             cur.execute(sql, 
                 (adjusted_qty, quantity, w_id, d_id)
             )
 
             if supplier_warehouse != w_id:
-                sql = (
-                    "UPDATE Stock "
-                    "SET S_REMOTE_CNT = S_REMOTE_CNT + 1, "
-                    "WHERE S_W_ID = %s AND S_I_ID = %s; "
-                )
+                sql = """
+                    UPDATE Stock 
+                        SET S_REMOTE_CNT = S_REMOTE_CNT + 1, 
+                        WHERE S_W_ID = %s AND S_I_ID = %s; 
+                """
                 cur.execute(sql, 
                     (w_id, d_id)
                 )
 
             # (5e) Update ITEM_AMOUNT 
-            sql = (
-                "SELECT I_NAME, I_PRICE "
-                "FROM Item "
-                "WHERE I_ID = %s; "
-            )
+            sql = """
+                SELECT I_NAME, I_PRICE 
+                    FROM Item 
+                    WHERE I_ID = %s; 
+            """
             cur.execute(sql, 
                 (item_number,)
             )
@@ -122,15 +114,15 @@ def new_order_execute(conn, io_line, data_lines=[]):
 
             # (5g) Create new order-line 
             ol_dist_info = "S_DIST_{}".format(d_id)
-            sql = (
-                "INSERT INTO OrderLine (OL_W_ID, OL_D_ID, OL_O_ID, "
-                "OL_NUMBER, OL_I_ID, OL_DELIVERY_D, OL_AMOUNT, "
-                "OL_SUPPLY_W_ID, OL_QUANTITY, OL_DIST_INFO) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s); "
-            )
+            sql = """
+                INSERT INTO OrderLine (OL_W_ID, OL_D_ID, OL_O_ID, 
+                    OL_NUMBER, OL_I_ID, OL_DELIVERY_D, OL_AMOUNT, 
+                    OL_SUPPLY_W_ID, OL_QUANTITY, OL_DIST_INFO) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s); 
+            """
             cur.execute(sql, 
-                (w_id, d_id, d_next_o_id, i, item_number, None, item_amount, 
-                    supplier_warehouse, quantity, "S_DIST_{}".format(d_id))
+                (w_id, d_id, o_id, i, item_number, None, item_amount, 
+                    supplier_warehouse, quantity, S_DIST_{}.format(d_id))
             )            
 
             ordered_items.append((
@@ -143,33 +135,33 @@ def new_order_execute(conn, io_line, data_lines=[]):
             ))
             
         # (6) Update TOTAL_AMOUNT 
-        sql = (
-            "SELECT D_TAX "
-            "FROM District "
-            "WHERE D_W_ID = %s AND D_ID = %s; "
-        )
+        sql = """
+            SELECT D_TAX 
+                FROM District 
+                WHERE D_W_ID = %s AND D_ID = %s; 
+        """
         cur.execute(sql, 
             (w_id, d_id)
         )
         row = cur.fetchone()
         d_tax = float(row[0])
 
-        sql = (
-            "SELECT W_TAX "
-            "FROM Warehouse "
-            "WHERE W_ID = %s; "
-        )
+        sql = """
+            SELECT W_TAX 
+                FROM Warehouse 
+                WHERE W_ID = %s; 
+        """
         cur.execute(sql, 
             (w_id,)
         )
         row = cur.fetchone()
         w_tax = float(row[0])
 
-        sql = (
-            "SELECT C_DISCOUNT "
-            "FROM Customer "
-            "WHERE C_W_ID = %s AND C_D_ID = %s AND C_ID = %s; "
-        )
+        sql = """
+            SELECT C_DISCOUNT 
+                FROM Customer 
+                WHERE C_W_ID = %s AND C_D_ID = %s AND C_ID = %s; 
+        """
         cur.execute(sql, 
             (w_id, d_id, c_id)
         )
@@ -178,11 +170,11 @@ def new_order_execute(conn, io_line, data_lines=[]):
 
         total_amount = total_amount * (1.0 + d_tax + w_tax) * (1.0 - c_discount)
 
-        sql = (
-            "SELECT C_LAST, C_CREDIT "
-            "FROM Customer "
-            "WHERE C_W_ID = %s AND C_D_ID = %s AND C_ID = %s "
-        )
+        sql = """
+            SELECT C_LAST, C_CREDIT 
+                FROM Customer 
+                WHERE C_W_ID = %s AND C_D_ID = %s AND C_ID = %s; 
+        """
         cur.execute(sql, 
             (w_id, d_id, c_id)
         )
@@ -190,11 +182,11 @@ def new_order_execute(conn, io_line, data_lines=[]):
         c_last, c_credit = row[0], row[1] 
 
         # (7) Output the following information: 
-        print("1. Customer: ", w_id, d_id, c_id, c_last, c_credit, c_discount)
-        print("2. Warehouse: ", w_tax, d_tax)
-        print("3. Order: ", d_next_o_id, o_entry_d)
-        print("4. Items: ", num_items, total_amount)
-        print("5. Ordered Items: ")
+        print(1. Customer: , w_id, d_id, c_id, c_last, c_credit, c_discount)
+        print(2. Warehouse: , w_tax, d_tax)
+        print(3. Order: , o_id, o_entry_d)
+        print(4. Items: , num_items, total_amount)
+        print(5. Ordered Items: )
 
         for ordered_item in ordered_items:
             print(ordered_item)

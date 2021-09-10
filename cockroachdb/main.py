@@ -5,7 +5,7 @@ import psycopg2
 
 from utils.cli import parse_cmdline
 from utils.parser import parse 
-from xacts.new_order import new_order_execute
+from xacts import new_order
 
 def main():
     opt = parse_cmdline()
@@ -17,7 +17,7 @@ def main():
     """
     # Test 2.1 
     io_line, data_lines = parse("N,1,1,1,1", ["1,1,1"])
-    new_order_execute(conn, io_line, data_lines)
+    new_order.execute(conn, io_line, data_lines)
     """
 
     conn.close()
