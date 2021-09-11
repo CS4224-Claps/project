@@ -20,10 +20,6 @@ def main():
     new_order.execute(conn, io_line, data_lines)
     """
 
-    # Test 2.3 
-    io_line, data_lines = parse("D,1,1")
-    delivery.execute(conn, io_line)
-
     conn.close()
 
 
