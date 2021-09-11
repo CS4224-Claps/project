@@ -5,7 +5,7 @@ import psycopg2
 
 from utils.cli import parse_cmdline
 from utils.parser import parse 
-from xacts import new_order, stock
+from xacts import new_order
 
 def main():
     opt = parse_cmdline()
