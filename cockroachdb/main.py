@@ -20,10 +20,6 @@ def main():
     new_order.execute(conn, io_line, data_lines)
     """
 
-    # Test 2.7
-    io_line, _ = parse("T")
-    top_balance.execute(conn, io_line)
-
     conn.close()
 
 
