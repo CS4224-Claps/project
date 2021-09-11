@@ -20,12 +20,6 @@ def main():
     new_order.execute(conn, io_line, data_lines)
     """
 
-    """
-    # Test 2.5 
-    io_line, data_lines = parse("S,1,1,50,300")
-    stock.execute(conn, io_line)
-    """
-
     conn.close()
 
 
