@@ -52,7 +52,7 @@ def execute(conn, io_line):
                 FROM Orderline
                 INNER JOIN Item ON I_ID = OL_I_ID
                 WHERE OL_W_ID = (%(w_id)s) AND OL_D_ID = (%(d_id)s) AND OL_O_ID = (%(o_id)s)
-                    AND OL_QUANTITY <= (
+                    AND OL_QUANTITY = (
                         SELECT MAX(OL_QUANTITY)
                         FROM Orderline
                         WHERE OL_W_ID = (%(w_id)s) AND OL_D_ID = (%(d_id)s) AND OL_O_ID = (%(o_id)s)
