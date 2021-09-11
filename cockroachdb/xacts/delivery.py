@@ -7,7 +7,7 @@ from utils.decorators import validate_command
 @validate_command("D")
 def execute(conn, io_line, data_lines=[]):
     # Retrieve Data from IO Line 
-    _, w_id, carrier_id = io_line
+    w_id, carrier_id = map(int, io_line[1:])
 
     with conn.cursor() as cur:
         # (1) For d_id in [1, 10]:
@@ -27,7 +27,7 @@ def execute(conn, io_line, data_lines=[]):
                 (carrier_id, w_id, d_id)
             )
             row = cur.fetchone()
-            o_id, c_id = row[0], row[1] 
+            o_id, c_id = row
 
             logging.debug("delivery: modifying %s %s", o_id, c_id)
 
@@ -51,7 +51,7 @@ def execute(conn, io_line, data_lines=[]):
             # (1d) Update C.BALANCE by B 
             sql = """
                 UPDATE Customer
-                    SET C_BALANCE = %s, 
+                    SET C_BALANCE = C_BALANCE + %s, 
                         C_DELIVERY_CNT = C_DELIVERY_CNT + 1
                     WHERE C_W_ID = %s AND C_D_ID = %s AND C_ID = %s; 
             """
