@@ -8,10 +8,11 @@ from utils.decorators import validate_command
 def execute(conn, io_line, data_lines=[]):    
     with conn.cursor() as cur:
         sql = """
-            SELECT C_W_ID, C_D_ID, C_FIRST, C_MIDDLE, C_LAST, C_BALANCE
-                FROM Customer 
-                ORDER BY C_BALANCE ASC 
-                LIMIT 10;
+SELECT concat_ws(' ', c_first, c_middle, c_last) as c_name, c_balance, w_name, d_name
+FROM Customer
+INNER JOIN Warehouse on w_id = c_w_id
+INNER JOIN District on d_w_id = c_w_id and d_id = c_d_id
+WHERE (c_w_id, c_d_id, c_id) in (SELECT c_w_id, c_d_id, c_id FROM Customer ORDER BY c_balance DESC LIMIT 10);
         """
 
         cur.execute(sql)
