@@ -34,7 +34,7 @@ def main():
     logging.debug(f"cli option: {opt}")
 
     conn = psycopg2.connect(dsn=opt.dsn, connection_factory=TimeLoggingConnection)
-    conn.initialize(init_logger(opt.outdir))
+    conn.initialize(init_logger(opt.infile, opt.outdir))
 
     with opt.infile as f:
         while True:
