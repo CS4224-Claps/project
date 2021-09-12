@@ -13,7 +13,7 @@ from xacts import (
     stock,
     popular_item,
     top_balance,
-    # related_customer,
+    related_customer,
 )
 
 command_to_func = {
@@ -24,7 +24,7 @@ command_to_func = {
     "S": stock,
     "I": popular_item,
     "T": top_balance,
-    # "R": related_customer,
+    "R": related_customer,
 }
 
 
