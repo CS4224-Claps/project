@@ -3,7 +3,6 @@ import psycopg2
 
 from utils.cli import parse_cmdline
 from utils.connection import TimeLoggingConnection
-from utils.decorators import log_command
 from utils.logging import init_logger 
 from utils.parser import next_xact
 from xacts import (
