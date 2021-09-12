@@ -1,11 +1,9 @@
-from datetime import datetime, timezone
-import logging 
-
-from utils.decorators import validate_command
+from utils.decorators import validate_command, log_command
 
 
 @validate_command("T")
-def execute(conn, io_line, data_lines=[]):    
+@log_command
+def execute(conn, io_line):    
     with conn.cursor() as cur:
         sql = """
             SELECT concat_ws(' ', c_first, c_middle, c_last) as c_name, c_balance, w_name, d_name

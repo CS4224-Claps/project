@@ -1,9 +1,10 @@
 import logging
 
-from utils.decorators import validate_command
+from utils.decorators import validate_command, log_command
 
 
 @validate_command("P")
+@log_command
 def execute(conn, io_line):
     # Retrieve Data from IO Line
     _, w_id, d_id, c_id, pay_amt = io_line

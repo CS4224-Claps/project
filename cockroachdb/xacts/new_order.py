@@ -1,10 +1,11 @@
 from datetime import datetime, timezone
 import logging 
 
-from utils.decorators import validate_command
+from utils.decorators import validate_command, log_command
 
 
 @validate_command("N")
+@log_command
 def execute(conn, io_line, data_lines=[]):
     # Retrieve Data from IO Line 
     _, w_id, d_id, c_id, num_items = io_line
