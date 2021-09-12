@@ -6,3 +6,6 @@ cockroachdb/config.json
 
 # Example Transactions 
 cockroachdb/xacts/example.py
+
+# Log Files 
+cockroachdb/logs

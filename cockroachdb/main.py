@@ -1,9 +1,9 @@
-import time
-import logging
-
+import logging, logging.handlers
 import psycopg2
 
 from utils.cli import parse_cmdline
+from utils.connection import TimeLoggingConnection
+from utils.logging import init_logger 
 from utils.parser import next_xact
 from xacts import (
     new_order,
@@ -33,7 +33,8 @@ def main():
     logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
     logging.debug(f"cli option: {opt}")
 
-    conn = psycopg2.connect(opt.dsn)
+    conn = psycopg2.connect(dsn=opt.dsn, connection_factory=TimeLoggingConnection)
+    conn.initialize(init_logger(opt.infile, opt.outdir))
 
     with opt.infile as f:
         while True:
