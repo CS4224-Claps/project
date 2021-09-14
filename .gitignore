@@ -9,3 +9,4 @@ cockroachdb/xacts/example.py
 
 # Log Files 
 cockroachdb/logs
+performance/out

@@ -40,7 +40,7 @@ def log_command(func):
         time_taken = int((after - before) * 1000)
 
         # In CSV Format 
-        logging.info(f"{command_letter},{time_taken}ms")
+        logging.info(f"{command_letter},{time_taken}")
 
         return command 
 
