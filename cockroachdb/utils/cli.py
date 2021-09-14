@@ -1,9 +1,15 @@
 from argparse import ArgumentParser, FileType, RawTextHelpFormatter
 from json import load
+from datetime import datetime
 import sys
 
 
-def get_dsn(config):
+def get_dsn(conf):
+    if "cockroach" not in conf:
+        raise ValueError("Missing cockroach field in config.json")
+
+    config = conf["cockroach"]
+
     return "postgresql://{}:{}@{}:{}/{}?sslmode=require".format(
         config["username"],
         config["password"],
@@ -32,7 +38,10 @@ def parse_cmdline():
         default=sys.stdin,
     )
     parser.add_argument(
-        "-o", dest="outdir", help="output directory for logs", default="logs"
+        "-o",
+        dest="outdir",
+        help="output directory for logs",
+        default=f"logs/cockroachdb/{datetime.now().strftime('%d-%m_%H')}",
     )
     args = parser.parse_args()
 

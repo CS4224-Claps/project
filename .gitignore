@@ -1,13 +1,9 @@
-# Pycache 
+# Pycache
 __pycache__
 
 # Configuration Files
-cockroachdb/config.json
-performance/cockroach_config.json
+config.json
 
-# Example Transactions 
-cockroachdb/xacts/example.py
-
-# Log Files 
-cockroachdb/logs
+# Log Files
 performance/out
+logs/
