@@ -2,8 +2,12 @@ from argparse import ArgumentParser, FileType, RawTextHelpFormatter
 from json import load
 
 
+def get_cockroach_dsn(conf):
+    if "cockroach" not in conf:
+        raise ValueError("Missing cockroach field in config.json")
 
-def get_dsn(config):
+    config = conf["cockroach"]
+
     return "postgresql://{}:{}@{}:{}/{}?sslmode=require".format(
         config["username"],
         config["password"],
@@ -17,29 +21,22 @@ def parse_cmdline():
     parser = ArgumentParser(description=__doc__, formatter_class=RawTextHelpFormatter)
     parser.add_argument(
         "-c",
-        dest="cockroach_config",
-        help="cockroach connection config file. defaults to cockroach_config.json",
-        default="cockroach_config.json",
+        dest="config_file",
+        help="config file. defaults to config.json",
+        default="config.json",
         type=FileType("r"),
     )
     parser.add_argument(
-        "-i",
-        dest="indir",
-        help="input directory containing xact logs",
+        "-d",
+        dest="directory",
+        help="directory containing xact logs",
         type=str,
-        default="/",
-    )
-    parser.add_argument(
-        "-o",
-        dest="outdir",
-        help="output directory containing csv peformance files",
-        type=str,
-        default="./out",
+        required=True,
     )
     args = parser.parse_args()
 
-    if args.cockroach_config:
-        args.__dict__.update(dsn=get_dsn(load(args.cockroach_config)))
+    if args.config_file:
+        args.__dict__.update(cockroach_dsn=get_cockroach_dsn(load(args.config_file)))
 
     return args
 

@@ -1,10 +1,9 @@
-import os
-
-import numpy as np 
+from pathlib import Path
+import numpy as np
 
 
 def get_client_num(file):
-    filename = os.path.splitext(file)[0]
+    filename = Path(file).stem
     client_num = filename.split("_")[0]
     return client_num
 
@@ -19,8 +18,16 @@ def get_stats(filename, xact_times):
     nine_five_latency = np.percentile(xact_times, 95)
     nine_nine_latency = np.percentile(xact_times, 99)
 
-    return client_num, num_xacts, total_xact_time, xact_throughput,\
-        avg_xact_time, median_xact_time, nine_five_latency, nine_nine_latency
+    return (
+        client_num,
+        num_xacts,
+        total_xact_time,
+        xact_throughput,
+        avg_xact_time,
+        median_xact_time,
+        nine_five_latency,
+        nine_nine_latency,
+    )
 
 
 def get_throughputs(throughput_times):
