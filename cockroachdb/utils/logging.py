@@ -14,6 +14,9 @@ def init_logger(infile, outdir):
     filename = Path(infile.name).stem
     logger = logging.getLogger()
 
+    # Create folder if not exists
+    Path(outdir).mkdir(parents=True, exist_ok=True)
+
     # To handle info statements, mainly for entire Xact times.
     info_file_handler = logging.handlers.WatchedFileHandler(
         f"{outdir}/{filename}_info.csv"
