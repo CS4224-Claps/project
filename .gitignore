@@ -3,6 +3,7 @@ __pycache__
 
 # Configuration Files
 cockroachdb/config.json
+performance/cockroach_config.json
 
 # Example Transactions 
 cockroachdb/xacts/example.py

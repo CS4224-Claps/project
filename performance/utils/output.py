@@ -5,6 +5,7 @@ import csv
 
 import pandas as pd 
 
+from utils.cockroach import get_cockroach_stats
 from utils.stats import get_stats, get_throughputs
 
 def print_client_stats(cwd, indir, outdir):
@@ -40,4 +41,13 @@ def print_throughput_stats(cwd, outdir):
         writer = csv.writer(f)
 
         writer.writerow(throughput_stats)
+        f.close()
+
+def print_cockroach_stats(cwd, outdir, conn):
+    os.chdir(cwd)
+
+    with open(outdir + "/dbstate.csv", "w+") as f:
+        writer = csv.writer(f)
+
+        writer.writerows(get_cockroach_stats(conn))
         f.close()
