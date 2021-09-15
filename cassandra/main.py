@@ -6,4 +6,9 @@ from cassandra.cluster import Cluster
 def main():
     cluster = Cluster(['192.168.48.255'])
     session = cluster.connect()
+    r = session.execute("SELECT * FROM system_schema.keyspaces;")
+    print(r.current_rows)
+
+if __name__ == "__main__":
+    main()
 
