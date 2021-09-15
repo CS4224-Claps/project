@@ -9,6 +9,7 @@ def get_client_num(file):
 
 
 def get_stats(filename, xact_times):
+    print(xact_times)
     client_num = get_client_num(filename)
     num_xacts = len(xact_times)
     total_xact_time = np.sum(xact_times) / 1000.0
