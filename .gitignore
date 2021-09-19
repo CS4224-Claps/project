@@ -7,3 +7,5 @@ config.json
 # Log Files
 performance/out
 logs/
+
+nohup.out
