@@ -50,10 +50,19 @@ optional arguments:
 
 #### Running all clients in one node
 
-- To run all clients in one node: `python run_clients.py --db cockroach -n 0 -i ~/seed/xact_files_A &> /dev/null &`
+- To run all clients in one node: `python run_clients.py --db cockroachdb -i ~/seed/xact_files_A -n 0 &`
 
 #### Run experiments
 
 1. Seed the database. Follow the instructions above
-2. Run `bash run.sh`
+2. Run `bash run.sh`. An interaction should look like the following.
+```bash
+$ bash run.sh
+Where is the project root located?
+~/project
+Which db are you using? (cassandra or cockroachdb)
+cockroachdb
+Which workload are you running? (A or B)
+A
+```
 3. Run `python performance/main.py -d [log directory]`

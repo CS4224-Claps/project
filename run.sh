@@ -10,7 +10,7 @@ read db
 if [[ $(whoami) != "cs4224d" ]]; then
     hosts=("xcnd35" "xcnd36" "xcnd37" "xcnd38" "xcnd39")
 
-    echo "Which workload are you running?"
+    echo "Which workload are you running? (A or B)"
     read workload # A or B
     workloadpath="~/seed/xact_files_$workload"
     unset workload
