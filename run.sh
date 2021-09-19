@@ -29,8 +29,10 @@ for host in ${hosts[@]}; do
     echo "--------------------
     $host
 --------------------"
-    sshcmd="cd $project_root; rm nohup.out; python run_clients.py --db $db -n $i -i $workloadpath & wait"
+    sshcmd="
+cd $project_root;
+nohup python3 -u run_clients.py --db $db -n $i -i $workloadpath >logs/cockroachdb/$host.log 2>&1 & "
     echo $sshcmd
-    ssh -o LogLevel=Error -t $host $sshcmd
+    ssh -o LogLevel=Error $host "$sshcmd"
     ((i++))
 done
