@@ -13,7 +13,6 @@ def run(opt):
     commands = []
     while node_idx < CLIENTS:
         command = [
-            "nohup",
             "python",
             f"{opt.dbtype}/main.py",
             "-i",
@@ -26,8 +25,9 @@ def run(opt):
         commands.append(command)
         node_idx += NODES
 
-    for cmd in commands:
-        Popen(cmd)
+    procs = [Popen(cmd) for cmd in commands]
+    for p in procs:
+        p.wait()
 
 
 def parse_cmd():
