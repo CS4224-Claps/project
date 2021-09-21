@@ -38,7 +38,7 @@ def run(opt):
 
     for p in procs:
         p.wait()
-        print(f"Process \"{' '.join(p.args)}\" returned {p.returncode}")
+        print(f"Process {p.args} returned {p.returncode}")
 
 
 def parse_cmd():
