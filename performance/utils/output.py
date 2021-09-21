@@ -29,12 +29,11 @@ def print_client_stats(directory):
         xact_times = xact_data["exec_time"].to_numpy()
         client_stats.append(get_stats(file, xact_times))
 
-    client_stats.sort(key=lambda stats:int(stats[0]))
+    client_stats.sort(key=lambda stats: int(stats[0]))
 
     with open(f"{directory}/clients.csv", "w+") as f:
         writer = csv.writer(f)
         writer.writerows(client_stats)
-        f.close()
 
 
 def print_throughput_stats(directory):
@@ -48,7 +47,6 @@ def print_throughput_stats(directory):
     with open(f"{directory}/throughput.csv", "w+") as f:
         writer = csv.writer(f)
         writer.writerow(throughput_stats)
-        f.close()
 
 
 def print_cockroach_stats(directory, conn):
@@ -56,4 +54,3 @@ def print_cockroach_stats(directory, conn):
         writer = csv.writer(f)
         cockroach_stats = get_cockroach_stats(conn)
         writer.writerows(np.reshape(cockroach_stats, (-1, 1)))
-        f.close()
