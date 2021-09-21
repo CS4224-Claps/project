@@ -3,8 +3,9 @@ import psycopg2
 
 from utils.cli import parse_cmdline
 from utils.connection import TimeLoggingConnection
-from utils.logging import init_logger 
+from utils.logging import init_logger
 from utils.parser import next_xact
+from utils.transactions import run_transaction
 from xacts import (
     new_order,
     payment,
@@ -43,7 +44,8 @@ def main():
                 break
 
             xact_type, *args = xact
-            command_to_func[xact_type].execute(conn, *args)
+            op = lambda conn: command_to_func[xact_type].execute(conn, *args)
+            run_transaction(conn, op)
 
     conn.close()
 
