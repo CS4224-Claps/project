@@ -29,6 +29,8 @@ def print_client_stats(directory):
         xact_times = xact_data["exec_time"].to_numpy()
         client_stats.append(get_stats(file, xact_times))
 
+    client_stats.sort(key=lambda stats:int(stats[0]))
+
     with open(f"{directory}/clients.csv", "w+") as f:
         writer = csv.writer(f)
         writer.writerows(client_stats)
