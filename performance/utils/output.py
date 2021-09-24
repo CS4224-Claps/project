@@ -31,7 +31,7 @@ def print_summary_stats(directory):
     xact_data = pd.concat(data_frames)
     total_xact_data = xact_data.groupby(['xact'])
 
-    total_xact_data['exec_time'].describe().to_csv(f"{directory}/xacts.csv")
+    total_xact_data['exec_time'].describe().round(3).to_csv(f"{directory}/xacts.csv")
 
 
 def print_client_stats(directory):
