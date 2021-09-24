@@ -16,7 +16,7 @@ do
     out_file="$out_dir/$i$_info.csv"
     out_num=$(eval "wc -l < $out_file")
 
-    xact_file="$out_dir/$i.txt"
+    xact_file="$xact_dir/$i.txt"
     xact_num=$(eval "grep -c '^[A-Za-z]' < $xact_file")
 
     if [[ $out_num -ne $xact_num ]]
