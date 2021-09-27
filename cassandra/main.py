@@ -12,6 +12,10 @@ def main():
     cluster_profile = ExecutionProfile(load_balancing_policy=RoundRobinPolicy, consistency_level=ConsistencyLevel.QUORUM)
     cluster = Cluster(contact_points=['192.168.48.255', '192.168.51.0', '192.168.51.2', '192.168.51.1', '192.168.48.254'], execution_profiles=cluster_profile)
     session = cluster.connect()
-    session.execute("select * from warehouse");
+    r = session.execute("SELECT * FROM system_schema.keyspaces;")
+    print(r.current_rows)
 
+
+if __name__ == "__main__":
+    main()
 
