@@ -2,6 +2,7 @@ DROP KEYSPACE IF EXISTS wholesale;
 CREATE KEYSPACE IF NOT EXISTS wholesale WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};
 USE wholesale;
 
+-- Creating tables
 DROP TABLE IF EXISTS Warehouse;
 CREATE TABLE Warehouse (
     W_ID INT,
@@ -20,6 +21,7 @@ DROP TABLE IF EXISTS District;
 CREATE TABLE District (
     D_W_ID INT,
     D_ID INT,
+    D_NAME TEXT,
     D_STREET_1 TEXT,
     D_STREET_2 TEXT,
     D_CITY TEXT,
@@ -32,6 +34,7 @@ CREATE TABLE District (
     PRIMARY KEY ((D_W_ID, D_ID))
 );
 
+DROP MATERIALIZED VIEW IF EXISTS Customer_by_balance;
 DROP TABLE IF EXISTS Customer;
 CREATE TABLE Customer (
     C_W_ID INT,
@@ -58,6 +61,7 @@ CREATE TABLE Customer (
     PRIMARY KEY ((C_W_ID, C_D_ID), C_ID)
 );
 
+DROP MATERIALIZED VIEW IF EXISTS Orders_by_cid;
 DROP TABLE IF EXISTS Orders; -- Order is a reserved word
 CREATE TABLE Orders (
     O_W_ID INT,
@@ -67,7 +71,7 @@ CREATE TABLE Orders (
     O_CARRIER_ID INT,
     O_OL_CNT DECIMAL,
     O_ALL_LOCAL DECIMAL,
-    O_ENTRY_ID TIMESTAMP,
+    O_ENTRY_D TIMESTAMP,
     PRIMARY KEY ((O_W_ID, O_D_ID), O_ID)
 );
 
@@ -120,7 +124,7 @@ CREATE TABLE Stock (
     PRIMARY KEY ((S_W_ID, S_I_ID)), 
 );
 
--- Materialized views for optimisation of read queries
+-- Creating materialized views for optimisation of read queries
 
 -- optimise transaction 7
 CREATE MATERIALIZED VIEW Customer_by_balance AS
@@ -128,12 +132,29 @@ CREATE MATERIALIZED VIEW Customer_by_balance AS
     FROM Customer
     WHERE C_D_ID IS NOT NULL AND C_W_ID IS NOT NULL AND C_ID IS NOT NULL AND C_BALANCE IS NOT NULL
     PRIMARY KEY ((C_W_ID, C_D_ID), C_ID, C_BALANCE)
-    WITH CLUSTERING ORDER BY (C_BALANCE DESC);
+    WITH CLUSTERING ORDER BY (C_ID DESC, C_BALANCE DESC);
 
 -- optimise transaction 4
 CREATE MATERIALIZED VIEW Orders_by_cid AS
-    SELECT O_W_ID, O_D_ID, O_ID, O_C_ID, O_ENTRY_ID, O_CARRIER_ID
+    SELECT O_W_ID, O_D_ID, O_ID, O_C_ID, O_ENTRY_D, O_CARRIER_ID
     FROM Orders
     WHERE O_W_ID IS NOT NULL AND O_D_ID IS NOT NULL AND O_ID IS NOT NULL AND O_C_ID IS NOT NULL
     PRIMARY KEY ((O_W_ID, O_D_ID), O_ID, O_C_ID)
-    WITH CLUSTERING ORDER BY (O_C_ID DESC, O_ID DESC)
+    WITH CLUSTERING ORDER BY (O_ID DESC, O_C_ID DESC);
+
+-- Loading data
+COPY Warehouse (W_ID, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, W_TAX, W_YTD) FROM 'seed/data_files_A/warehouse.csv';
+
+COPY District (D_W_ID, D_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, D_TAX, D_YTD, D_NEXT_O_ID) FROM 'seed/data_files_A/district.csv';
+
+COPY Customer (C_W_ID, C_D_ID, C_ID, C_FIRST, C_MIDDLE, C_LAST, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_CREDIT, C_CREDIT_LIM, C_DISCOUNT, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_DATA) FROM 'seed/data_files_A/customer.csv';
+
+-- TODO fix: will not copy null into O_CARRIER_ID (INT field)
+COPY Orders (O_W_ID, O_D_ID, O_ID, O_C_ID, O_CARRIER_ID, O_OL_CNT, O_ALL_LOCAL, O_ENTRY_D) FROM 'seed/data_files_A/order.csv';
+
+COPY Item (I_ID, I_NAME, I_PRICE, I_IM_ID, I_DATA) FROM 'seed/data_files_A/item.csv';
+
+-- TODO fix: will not copy null into OL_DELIVERY_D (TIMESTAMP field)
+COPY OrderLine (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER, OL_I_ID, OL_DELIVERY_D, OL_AMOUNT, OL_SUPPLY_W_ID, OL_QUANTITY, OL_DIST_INFO) FROM 'seed/data_files_A/order-line.csv';
+
+COPY Stock (S_W_ID, S_I_ID, S_QUANTITY, S_YTD, S_ORDER_CNT, S_REMOTE_CNT, S_DIST_01, S_DIST_02, S_DIST_03, S_DIST_04, S_DIST_05, S_DIST_06, S_DIST_07, S_DIST_08, S_DIST_09, S_DIST_10, S_DATA) FROM 'seed/data_files_A/stock.csv';
