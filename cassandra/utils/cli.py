@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 
 
 def parse_cli():
@@ -13,10 +14,13 @@ def parse_cli():
     cli_parser.add_argument('-o',
                             dest='logfile',
                             type=argparse.FileType('w'),
-                            nargs=1,
-                            help='log file for transaction')
+                            nargs='?',
+                            help='log file for transaction',
+                            default=f'logs/cassandra/{datetime.now().strftime("%d-%m_%H")}')
 
-    cli_parser.parse_args()
+    args = cli_parser.parse_args()
 
-parse_cli()
+    return args;
+
+
 
