@@ -1,10 +1,12 @@
 #! /usr/bin/env bash
 
-echo "Where are the output files located?"
-read out_dir
+if [ $# -lt 2 ]; then
+    echo "Usage: ./verify.sh out_dir xact_dir"
+    return 1
+fi
 
-echo "Where are the xact files located?"
-read xact_dir 
+out_dir="$1"
+xact_dir="$2"
 
 _info="_info"
 
@@ -20,10 +22,10 @@ do
     xact_num=$(eval "grep -c '^[A-Za-z]' < $xact_file")
 
     if [[ $out_num -ne $xact_num ]]
-    then 
-        echo "FAILURE: Xact $i"
+    then
+        echo "FAILURE: Xact $i. Expected $xact_num, got $out_num"
     fi
-done 
+done
 
-echo 
+echo
 echo 'Verification Complete.'

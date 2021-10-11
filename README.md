@@ -65,4 +65,5 @@ cockroachdb
 Which workload are you running? (A or B)
 A
 ```
-3. Run `python performance/main.py -d [log directory]`
+3. Run `python performance/main.py -d [log directory]`. Add `-x` flag to generate additional time stats for each transaction type.
+4. Run `./verify.sh [out log directory] [xact_file directory]` to check if any of the client failed.

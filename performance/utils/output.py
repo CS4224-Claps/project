@@ -29,9 +29,11 @@ def print_summary_stats(directory):
         data_frames.append(xact_data)
 
     xact_data = pd.concat(data_frames)
-    total_xact_data = xact_data.groupby(['xact'])
+    total_xact_data = xact_data.groupby(["xact"])
 
-    total_xact_data['exec_time'].describe().round(3).to_csv(f"{directory}/xacts.csv")
+    total_xact_data["exec_time"].describe(
+        percentiles=[0.25, 0.5, 0.75, 0.95, 0.99]
+    ).round(3).to_csv(f"{directory}/xacts.csv")
 
 
 def print_client_stats(directory):
