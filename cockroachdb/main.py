@@ -45,7 +45,7 @@ def main():
 
             xact_type, *args = xact
             op = lambda conn: command_to_func[xact_type].execute(conn, *args)
-            run_transaction(conn, op)
+            run_transaction(conn, op, opt.max_retries)
 
     conn.close()
 
