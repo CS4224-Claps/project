@@ -27,7 +27,6 @@ def execute(conn, io_line):
             cur.execute(sql, 
                 (carrier_id, w_id, d_id)
             )
-            row = cur.fetchone()
 
             logging.debug("delivery: row info %s", row)
 
