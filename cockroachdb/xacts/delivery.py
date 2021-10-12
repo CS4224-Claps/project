@@ -31,8 +31,9 @@ def execute(conn, io_line):
 
             logging.debug("delivery: row info %s", row)
 
-            if row is None or row[0] is None or row[1] is None:
+            if row.description is None:
                 continue
+            o_id, c_id = cur.fetchone()
 
             o_id, c_id = row
 
