@@ -24,7 +24,10 @@ def execute(conn, io_line):
             """
 
             cur.execute(sql, (carrier_id, w_id, d_id))
-            if cur.description is None:
+            if cur.rowcount is None or cur.rowcount <= 0:
+                logging.debug(
+                    f"no pending deliveries for w_id={w_id}, d_id={d_id}! skipping..."
+                )
                 continue
             o_id, c_id = cur.fetchone()
 
@@ -47,12 +50,15 @@ def execute(conn, io_line):
 
             # (1d) Update C.BALANCE by B
             sql = """
-                UPDATE Customer
-                    SET C_BALANCE = C_BALANCE + SUM(
-                        UPDATE OrderLine
+                WITH balances AS (
+                    UPDATE OrderLine
                         SET OL_DELIVERY_D = NOW()
                         WHERE OL_W_ID = %(w_id)s AND OL_D_ID = %(d_id)s AND OL_O_ID = %(o_id)s
-                        RETURNING OL_AMOUNT;
+                        RETURNING OL_AMOUNT
+                )
+                UPDATE Customer
+                    SET C_BALANCE = C_BALANCE + (
+                        SELECT SUM(OL_AMOUNT) FROM balances
                     ),
                         C_DELIVERY_CNT = C_DELIVERY_CNT + 1
                     WHERE C_W_ID = %(w_id)s AND C_D_ID = %(d_id)s AND C_ID = %(c_id)s;
