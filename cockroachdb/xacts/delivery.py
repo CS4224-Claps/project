@@ -28,6 +28,9 @@ def execute(conn, io_line):
                 (carrier_id, w_id, d_id)
             )
             row = cur.fetchone()
+
+            logging.debug("delivery: row info %s", row)
+
             if row is None or row[0] is None or row[1] is None:
                 continue
 
