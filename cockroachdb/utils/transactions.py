@@ -31,7 +31,7 @@ def run_transaction(conn, op, max_retries=3):
                 logging.debug("got error: %s", e)
                 conn.rollback()
                 logging.debug("EXECUTE SERIALIZATION_FAILURE BRANCH")
-                sleep_ms = (2 ** retry) * 0.1 * (random.random() + 0.5)
+                sleep_ms = (1.5 ** retry) * 0.1 * (random.random() + 0.5)
                 logging.debug("Sleeping %s seconds", sleep_ms)
                 time.sleep(sleep_ms)
 
