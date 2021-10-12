@@ -27,11 +27,9 @@ def execute(conn, io_line):
             cur.execute(sql, 
                 (carrier_id, w_id, d_id)
             )
-            if row.description is None:
+            if cur.description is None:
                 continue
             o_id, c_id = cur.fetchone()
-
-            o_id, c_id = row
 
             logging.debug("delivery: modifying %s %s", o_id, c_id)
 
