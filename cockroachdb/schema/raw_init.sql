@@ -121,13 +121,13 @@ CREATE TABLE IF NOT EXISTS Stock (
 
 -- run `cd seed/ && python3 -m http.server 3000` in xcnd36
 
-IMPORT INTO Warehouse CSV DATA ('http://xcnd36:3000/data_files_A/warehouse.csv') WITH nullif = 'null';
-IMPORT INTO District CSV DATA ('http://xcnd36:3000/data_files_A/district.csv') WITH nullif = 'null';
-IMPORT INTO Customer CSV DATA ('http://xcnd36:3000/data_files_A/customer.csv') WITH nullif = 'null';
-IMPORT INTO Orders CSV DATA ('http://xcnd36:3000/data_files_A/order.csv') WITH nullif = 'null';
-IMPORT INTO Item CSV DATA ('http://xcnd36:3000/data_files_A/item.csv') WITH nullif = 'null';
-IMPORT INTO OrderLine CSV DATA ('http://xcnd36:3000/data_files_A/order-line.csv') WITH nullif = 'null';
-IMPORT INTO Stock CSV DATA ('http://xcnd36:3000/data_files_A/stock.csv') WITH nullif = 'null';
+IMPORT INTO Warehouse CSV DATA ('http://xcnd36:3000/data_files/warehouse.csv') WITH nullif = 'null';
+IMPORT INTO District CSV DATA ('http://xcnd36:3000/data_files/district.csv') WITH nullif = 'null';
+IMPORT INTO Customer CSV DATA ('http://xcnd36:3000/data_files/customer.csv') WITH nullif = 'null';
+IMPORT INTO Orders CSV DATA ('http://xcnd36:3000/data_files/order.csv') WITH nullif = 'null';
+IMPORT INTO Item CSV DATA ('http://xcnd36:3000/data_files/item.csv') WITH nullif = 'null';
+IMPORT INTO OrderLine CSV DATA ('http://xcnd36:3000/data_files/order-line.csv') WITH nullif = 'null';
+IMPORT INTO Stock CSV DATA ('http://xcnd36:3000/data_files/stock.csv') WITH nullif = 'null';
 
 ALTER TABLE District VALIDATE CONSTRAINT fk_d_id_ref_warehouse;
 ALTER TABLE Customer VALIDATE CONSTRAINT fk_c_w_id_ref_district;
