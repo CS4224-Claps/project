@@ -66,17 +66,18 @@ CREATE TABLE IF NOT EXISTS Customer (
 );
 
 CREATE TABLE IF NOT EXISTS Orders (
-    O_W_ID INTEGER,
-    O_D_ID INTEGER,
-    O_ID INTEGER,
+    id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid() , -- spread orders more evenly
+    O_W_ID INTEGER NOT NULL,
+    O_D_ID INTEGER NOT NULL,
+    O_ID INTEGER NOT NULL,
     O_C_ID INTEGER,
     O_CARRIER_ID INTEGER,
     O_OL_CNT DECIMAL(2, 0),
     O_ALL_LOCAL DECIMAL(1, 0), -- True or False
     O_ENTRY_D TIMESTAMP,
-    PRIMARY KEY (O_W_ID, O_D_ID, O_ID),
+    UNIQUE (O_W_ID, O_D_ID, O_ID ASC),
     FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer(C_W_ID, C_D_ID, C_ID),
-    CHECK (O_CARRIER_ID >= 1 AND O_CARRIER_ID <= 10)
+    CONSTRAINT valid_carrier CHECK (O_CARRIER_ID >= 1 AND O_CARRIER_ID <= 10)
 );
 
 CREATE TABLE IF NOT EXISTS Item (
@@ -133,14 +134,14 @@ CREATE TABLE IF NOT EXISTS Stock (
 IMPORT INTO Warehouse CSV DATA ('http://xcnd36:3000/data_files_A/warehouse.csv') WITH nullif = 'null';
 IMPORT INTO District CSV DATA ('http://xcnd36:3000/data_files_A/district.csv') WITH nullif = 'null';
 IMPORT INTO Customer CSV DATA ('http://xcnd36:3000/data_files_A/customer.csv') WITH nullif = 'null';
-IMPORT INTO Orders CSV DATA ('http://xcnd36:3000/data_files_A/order.csv') WITH nullif = 'null';
+IMPORT INTO Orders (O_W_ID, O_D_ID, O_ID, O_C_ID, O_CARRIER_ID, O_OL_CNT, O_ALL_LOCAL, O_ENTRY_D) CSV DATA ('http://xcnd36:3000/data_files_A/order.csv') WITH nullif = 'null';
 IMPORT INTO Item CSV DATA ('http://xcnd36:3000/data_files_A/item.csv') WITH nullif = 'null';
 IMPORT INTO OrderLine CSV DATA ('http://xcnd36:3000/data_files_A/order-line.csv') WITH nullif = 'null';
 IMPORT INTO Stock CSV DATA ('http://xcnd36:3000/data_files_A/stock.csv') WITH nullif = 'null';
 
 ALTER TABLE District VALIDATE CONSTRAINT fk_d_id_ref_warehouse;
 ALTER TABLE Customer VALIDATE CONSTRAINT fk_c_w_id_ref_district;
-ALTER TABLE Orders VALIDATE CONSTRAINT check_o_carrier_id_o_carrier_id;
+ALTER TABLE Orders VALIDATE CONSTRAINT valid_carrier;
 ALTER TABLE Orders VALIDATE CONSTRAINT fk_o_w_id_ref_customer;
 ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_i_id_ref_item;
 ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_w_id_ref_orders;
