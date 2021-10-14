@@ -34,7 +34,7 @@ CREATE TABLE District_Read (
     D_TAX DECIMAL(4, 4), 
     PRIMARY KEY (D_W_ID, D_ID), 
     FOREIGN KEY (D_W_ID) REFERENCES Warehouse_Read(W_ID)
-)
+);
 
 CREATE TABLE District_Write (
     D_W_ID INTEGER, 
@@ -43,7 +43,7 @@ CREATE TABLE District_Write (
     D_NEXT_O_ID INTEGER, 
     PRIMARY KEY (D_W_ID, D_ID), 
     FOREIGN KEY (D_W_ID) REFERENCES Warehouse_Read(W_ID)
-)
+);
 
 CREATE TABLE Customer_Read (
     C_W_ID INTEGER, 
@@ -85,7 +85,7 @@ CREATE TABLE Customer_Misc (
     C_DATA VARCHAR(500), 
     PRIMARY KEY (C_W_ID, C_D_ID, C_ID), 
     FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District_Read(D_W_ID, D_ID)
-)
+);
 
 CREATE TABLE Order_Read (
     O_W_ID INTEGER, 
