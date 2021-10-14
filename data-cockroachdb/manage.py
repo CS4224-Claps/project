@@ -28,7 +28,8 @@ for name in file_names:
 
     for heading in dist_heading_names: 
         dist_headings = dist_header_mappings[heading]
-        dist_data = data[dist_headings]        
+        dist_data = data[dist_headings]      
+        dist_data = dist_data.replace(r'^\s*$', "null", regex=True)
 
         dest_name = "{}.csv".format(heading)
         dist_data.to_csv(dest_name, mode="w+", index=False, header=False)
