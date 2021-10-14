@@ -29,5 +29,12 @@ for name in file_names:
     for heading in dist_heading_names: 
         dist_headings = dist_header_mappings[heading]
         dist_data = data[dist_headings]
+
+        if heading == 'order_write_headers':
+            dist_data['o_carrier_id'] = dist_data['o_carrier_id'].fillna(-1)
+            dist_data['o_carrier_id'] = dist_data['o_carrier_id'].astype(int)
+            dist_data['o_carrier_id'] = dist_data['o_carrier_id'].astype(str)
+            dist_data['o_carrier_id'] = dist_data['o_carrier_id'].replace(-1, 'null')
+
         dest_name = "{}.csv".format(heading)
         dist_data.to_csv(dest_name, mode="w+", index=False, header=False)
