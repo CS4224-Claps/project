@@ -11,3 +11,7 @@ def parse_xact(f):
 
     data_lines = [f.readline().rstrip("\n").split(",") for _ in range(int(input_arr[-1]))]
     return input_arr[0], input_arr, data_lines
+
+
+
+
