@@ -29,7 +29,7 @@ CREATE TABLE District_Read (
     D_ZIP CHAR(9), 
     D_TAX DECIMAL(4, 4), 
     PRIMARY KEY (D_W_ID, D_ID), 
-    FOREIGN KEY D_ID REFERENCES Warehouse_Read
+    FOREIGN KEY D_W_ID REFERENCES Warehouse_Read(W_ID)
 )
 
 CREATE TABLE District_Write (
@@ -38,7 +38,7 @@ CREATE TABLE District_Write (
     D_YTD DECIMAL(12, 2), 
     D_NEXT_O_ID INTEGER, 
     PRIMARY KEY (D_W_ID, D_ID), 
-    FOREIGN KEY D_ID REFERENCES Warehouse_Read
+    FOREIGN KEY D_W_ID REFERENCES Warehouse_Read(W_ID)
 )
 
 CREATE TABLE Customer_Read (
@@ -59,7 +59,7 @@ CREATE TABLE Customer_Read (
     C_CREDIT_LIM DECIMAL(12, 2), 
     C_DISCOUNT DECIMAL(4, 4), 
     PRIMARY KEY (C_W_ID, C_D_ID, C_ID), 
-    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District_Read
+    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District_Read(D_W_ID, D_ID)
 );
 
 CREATE TABLE Customer_Write (
@@ -71,7 +71,7 @@ CREATE TABLE Customer_Write (
     C_PAYMENT_CNT INT, 
     C_DELIVERY_CNT INT, 
     PRIMARY KEY (C_W_ID, C_D_ID, C_ID), 
-    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District_Read
+    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District_Read(D_W_ID, D_ID)
 );
 
 CREATE TABLE Customer_Misc (
@@ -80,7 +80,7 @@ CREATE TABLE Customer_Misc (
     C_ID INTEGER,
     C_DATA VARCHAR(500), 
     PRIMARY KEY (C_W_ID, C_D_ID, C_ID), 
-    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District_Read
+    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District_Read(D_W_ID, D_ID)
 )
 
 CREATE TABLE Order_Read (
@@ -92,7 +92,7 @@ CREATE TABLE Order_Read (
     O_ALL_LOCAL DECIMAL(1, 0), -- True or False 
     O_ENTRY_ID TIMESTAMP
     PRIMARY KEY (O_W_ID, O_D_ID, O_ID), 
-    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer_Read, 
+    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer_Read(C_W_ID, C_D_ID, C_ID),
 );
 
 CREATE TABLE Order_Write (
@@ -102,7 +102,7 @@ CREATE TABLE Order_Write (
     O_C_ID INTEGER, 
     O_CARRIER_ID INTEGER, -- Create Index? Care of NULL
     PRIMARY KEY (O_W_ID, O_D_ID, O_ID), 
-    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer_Read, 
+    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer_Read(C_W_ID, C_D_ID, C_ID),
     CHECK O_CARRIER_ID >= 1 AND O_CARRIER_ID <= 10
 );
 
@@ -131,8 +131,8 @@ CREATE TABLE OrderLine_Read (
     OL_QUANTITY DECIMAL(2, 0), 
     OL_DIST_INFO CHAR(24)
     PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER), 
-    FOREIGN KEY (OL_W_ID, OL_D_ID, OL_O_ID) REFERENCES Order_Read, 
-    FOREIGN KEY (OL_I_ID) REFERENCES Item_Read, 
+    FOREIGN KEY (OL_W_ID, OL_D_ID, OL_O_ID) REFERENCES Orders(O_W_ID, O_D_ID, O_ID),
+    FOREIGN KEY (OL_I_ID) REFERENCES Item_Read(I_ID), 
 );
 
 CREATE TABLE OrderLine_Write (
@@ -143,8 +143,8 @@ CREATE TABLE OrderLine_Write (
     OL_I_ID INTEGER, 
     OL_DELIVERY_D TIMESTAMP, 
     PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER), 
-    FOREIGN KEY (OL_W_ID, OL_D_ID, OL_O_ID) REFERENCES Order_Read, 
-    FOREIGN KEY (OL_I_ID) REFERENCES Item_Read, 
+    FOREIGN KEY (OL_W_ID, OL_D_ID, OL_O_ID) REFERENCES Orders(O_W_ID, O_D_ID, O_ID),
+    FOREIGN KEY (OL_I_ID) REFERENCES Item_Read(I_ID), 
 );
 
 CREATE TABLE Stock_Write (
@@ -155,8 +155,8 @@ CREATE TABLE Stock_Write (
     S_ORDER_CNT INTEGER, 
     S_REMOTE_CNT INTEGER, 
     PRIMARY KEY (S_W_ID, S_I_ID), 
-    FOREIGN KEY (S_W_ID) REFERENCES Warehouse_Read, 
-    FOREIGN KEY (S_I_ID) REFERENCES Item_Read
+    FOREIGN KEY (S_W_ID) REFERENCES Warehouse_Read(W_ID),
+    FOREIGN KEY (S_I_ID) REFERENCES Item_Read(I_ID)
 );
 
 CREATE TABLE Stock_Misc (
@@ -174,8 +174,8 @@ CREATE TABLE Stock_Misc (
     S_DIST_10 CHAR(24),
     S_DATA VARCHAR(50), 
     PRIMARY KEY (S_W_ID, S_I_ID), 
-    FOREIGN KEY (S_W_ID) REFERENCES Warehouse_Read, 
-    FOREIGN KEY (S_I_ID) REFERENCES Item_Read
+    FOREIGN KEY (S_W_ID) REFERENCES Warehouse_Read(W_ID),
+    FOREIGN KEY (S_I_ID) REFERENCES Item_Read(I_ID)
 );
 
 -- run `cd seed/ && python3 -m http.server 3000` in xcnd36
