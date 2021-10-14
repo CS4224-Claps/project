@@ -22,14 +22,13 @@ for name in file_names:
     file_address = fileserver_name.format(name)
 
     raw_headings = raw_header_mappings[name]
-    data = pd.read_csv(file_address, dtype=str, names=raw_headings)
+    data = pd.read_csv(file_address, dtype=object, names=raw_headings)
 
     dist_heading_names = raw_to_dist_mappings[name]
 
     for heading in dist_heading_names: 
         dist_headings = dist_header_mappings[heading]
         dist_data = data[dist_headings]      
-        dist_data = dist_data.replace(r'^\s*$', "null", regex=True)
 
         dest_name = "{}.csv".format(heading)
         dist_data.to_csv(dest_name, mode="w+", index=False, header=False)
