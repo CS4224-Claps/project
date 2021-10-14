@@ -26,6 +26,7 @@ CREATE TABLE Warehouse_Write (
 CREATE TABLE District_Read (
     D_W_ID INTEGER, 
     D_ID INTEGER, 
+    D_NAME VARCHAR(10),
     D_STREET_1 VARCHAR(20), 
     D_STREET_2 VARCHAR(20), 
     D_CITY VARCHAR(20), 
@@ -119,6 +120,7 @@ CREATE TABLE Item_Read (
 
 CREATE TABLE Item_Misc (
     I_ID INTEGER, 
+    I_NAME VARCHAR(24), 
     I_IM_ID INTEGER, 
     I_DATA VARCHAR(50), 
     PRIMARY KEY (I_ID)
