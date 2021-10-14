@@ -35,6 +35,10 @@ for name in file_names:
             dist_data['o_carrier_id'] = dist_data['o_carrier_id'].astype(int)
             dist_data['o_carrier_id'] = dist_data['o_carrier_id'].astype(str)
             dist_data['o_carrier_id'] = dist_data['o_carrier_id'].replace(-1, 'null')
+            
+        if heading == 'order_line_write_headers':
+            dist_data['ol_delivery_d'] = dist_data['ol_delivery_d'].astype(str)
+            dist_data['ol_delivery_d'] = dist_data['ol_delivery_d'].replace(None, 'null')            
 
         dest_name = "{}.csv".format(heading)
         dist_data.to_csv(dest_name, mode="w+", index=False, header=False)
