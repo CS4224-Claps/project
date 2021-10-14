@@ -11,5 +11,5 @@ command_to_func = {
 
 def run_xact(xact_type, session, *args):
     if xact_type in command_to_func:
-        xact = command_to_func.get(xact_type)(session, *args)
+        xact = command_to_func.get(xact_type)
         return xact
