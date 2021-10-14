@@ -29,5 +29,5 @@ for name in file_names:
     for heading in dist_heading_names: 
         dist_headings = dist_header_mappings[heading]
         dist_data = data[dist_headings]
-        dest_name = "/home/stuproj/cs4224d/seed/dist_data_file/{}.csv".format(heading)
+        dest_name = "~/seed/dist_data_file/{}.csv".format(heading)
         dist_data.to_csv(dest_name, mode="w+", index=False, header=False)
