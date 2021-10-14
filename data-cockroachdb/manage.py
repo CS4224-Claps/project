@@ -30,4 +30,4 @@ for name in file_names:
         dist_headings = dist_header_mappings[heading]
         dist_data = data[dist_headings]
         dest_name = "/home/stuproj/cs4224d/seed/dist_data_file/{}.csv".format(heading)
-        dist_data.to_csv(dest_name, index=False, header=False)
+        dist_data.to_csv(dest_name, mode="w+", index=False, header=False)
