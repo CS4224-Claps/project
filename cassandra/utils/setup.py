@@ -62,7 +62,7 @@ def add_iprice_and_iname_to_stock(data_folder):
     add_attrs_to_table(data_folder, ITEM, STOCK, [0], [1], [2, 1])
 
 def add_iname_to_orderline(data_folder):
-    add_attrs_to_table(data_folder, ITEM, ORDERLINE, [0], [1], [1])
+    add_attrs_to_table(data_folder, ITEM, ORDERLINE, [0], [1], [4])
 
 def add_attrs_to_table(data_folder, from_csv, to_csv, from_pk_indices, to_pk_indices, attr_indices):
     """
