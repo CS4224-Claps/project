@@ -15,7 +15,7 @@ TEMP = 'temp'
 WAREHOUSE = 'warehouse.csv'
 DISTRICT = 'district.csv'
 CUSTOMER = 'customer.csv'
-ORDER = 'orders.csv'
+ORDER = 'order.csv'
 ITEM = 'item.csv'
 ORDERLINE = 'order-line.csv'
 STOCK = 'stock.csv'
@@ -36,7 +36,7 @@ def create_tables(session, schema_file):
     """
     statements = read_cql_statements(schema_file)
     for statement in statements:
-        session.execute(statement)
+        session.execute(statement, timeout=999)
 
 def read_cql_statements(file):
     """
@@ -89,13 +89,13 @@ def load_data(data_folder):
     Loads data from the data_folder for unmodified csvs, and the TEMP folder for modified csvs.
     This uses the COPY command which is only usable in cqlsh, not via the python driver.
     """
-    subprocess.run('cqlsh', input=LOAD_WAREHOUSE.format(os.path.join(data_folder, WAREHOUSE)), encoding='utf-8')
-    subprocess.run('cqlsh', input=LOAD_DISTRICT.format(os.path.join(TEMP, DISTRICT)), encoding='utf-8')
-    subprocess.run('cqlsh', input=LOAD_CUSTOMER.format(os.path.join(data_folder, CUSTOMER)), encoding='utf-8')
-    subprocess.run('cqlsh', input=LOAD_ORDER.format(os.path.join(data_folder, ORDER)), encoding='utf-8')
-    subprocess.run('cqlsh', input=LOAD_ITEM.format(os.path.join(data_folder, ITEM)), encoding='utf-8')
-    subprocess.run('cqlsh', input=LOAD_ORDERLINE.format(os.path.join(TEMP, ORDERLINE)), encoding='utf-8')
-    subprocess.run('cqlsh', input=LOAD_STOCK.format(os.path.join(TEMP, STOCK)), encoding='utf-8')
+    subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_WAREHOUSE.format(os.path.join(data_folder, WAREHOUSE)), encoding='utf-8')
+    subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_DISTRICT.format(os.path.join(TEMP, DISTRICT)), encoding='utf-8')
+    subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_CUSTOMER.format(os.path.join(data_folder, CUSTOMER)), encoding='utf-8')
+    subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_ORDER.format(os.path.join(data_folder, ORDER)), encoding='utf-8')
+    subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_ITEM.format(os.path.join(data_folder, ITEM)), encoding='utf-8')
+    subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_ORDERLINE.format(os.path.join(TEMP, ORDERLINE)), encoding='utf-8')
+    subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_STOCK.format(os.path.join(TEMP, STOCK)), encoding='utf-8')
 
 def create_temp_folder():
     if not os.path.isdir(TEMP):
