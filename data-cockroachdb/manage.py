@@ -8,7 +8,7 @@ from utils.mappings import (
 from utils.raw_headers import raw_header_mappings 
 from utils.dist_headers import dist_header_mappings
 
-headers: {
+raw_to_dist_mappings: {
     'warehouse': ['warehouse_read_headers', 'warehouse_write_headers'], 
     'district': ['district_read_headers', 'district_write_headers'], 
     'customer': ['customer_read_headers', 'customer_write_headers', 'customer_misc_headers'], 
@@ -18,14 +18,16 @@ headers: {
     'stock': ['stock_write_headers', 'stock_misc_headers'],
 }
 
+for name in file_names: 
+    file_address = fileserver_name.format(name)
 
-file_address = fileserver_name.format('a')
-xacts = pd.read_csv(file_address, names=['a', 'b', 'c'])
-print(xacts)
+    raw_headings = raw_header_mappings[name]
+    data = pd.read_csv(file_address, names=raw_headings)
 
-"""
-xacts = pd.read_csv("/home/seanlowjk/Git/project/cockroachdb-dist/a.csv", names=['a', 'b', 'c'])
-print(xacts)
-print(xacts[['a', 'b']])
-xacts[['a', 'b']].to_csv("/home/seanlowjk/Git/project/cockroachdb-dist/b.csv", index=False, header=False)
-"""
+    dist_heading_names = raw_to_dist_mappings[name]
+
+    for heading in dist_heading_names: 
+        dist_headings = dist_header_mappings[heading]
+        dist_data = data[dist_headings]
+        dest_name = "/home/stuproj/cs4224d/seed/dist_data_file/{}.csv".format(heading)
+        dist_data.to_csv(dest_name, index=False, header=False)

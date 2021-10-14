@@ -8,4 +8,4 @@ file_names = [
     'stock'
 ]
 
-fileserver_name = "http://xcnd36:3000/data_files/{}.csv"
+fileserver_name = "http://localhost:3000/data_files/{}.csv"

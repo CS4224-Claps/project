@@ -49,7 +49,6 @@ customer_headers = [
 ]
 
 order_headers = [
-    'o_id',
     'o_w_id',
     'o_d_id',
     'o_id',
