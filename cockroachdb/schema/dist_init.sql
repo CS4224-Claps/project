@@ -96,7 +96,7 @@ CREATE TABLE Order_Read (
     O_ALL_LOCAL DECIMAL(1, 0), -- True or False 
     O_ENTRY_ID TIMESTAMP, 
     PRIMARY KEY (O_W_ID, O_D_ID, O_ID), 
-    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer_Read(C_W_ID, C_D_ID, C_ID),
+    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer_Read(C_W_ID, C_D_ID, C_ID)
 );
 
 CREATE TABLE Order_Write (
