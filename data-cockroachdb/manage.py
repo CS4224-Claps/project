@@ -22,23 +22,13 @@ for name in file_names:
     file_address = fileserver_name.format(name)
 
     raw_headings = raw_header_mappings[name]
-    data = pd.read_csv(file_address, names=raw_headings)
+    data = pd.read_csv(file_address, , dtype=str, names=raw_headings)
 
     dist_heading_names = raw_to_dist_mappings[name]
 
     for heading in dist_heading_names: 
         dist_headings = dist_header_mappings[heading]
-        dist_data = data[dist_headings]
-
-        if heading == 'order_write_headers':
-            dist_data['o_carrier_id'] = dist_data['o_carrier_id'].fillna(-1)
-            dist_data['o_carrier_id'] = dist_data['o_carrier_id'].astype(int)
-            dist_data['o_carrier_id'] = dist_data['o_carrier_id'].astype(str)
-            dist_data['o_carrier_id'] = dist_data['o_carrier_id'].replace(-1, 'null')
-            
-        if heading == 'order_line_write_headers':
-            dist_data['ol_delivery_d'] = dist_data['ol_delivery_d'].astype(str)
-            dist_data['ol_delivery_d'] = dist_data['ol_delivery_d'].replace(None, 'null')            
+        dist_data = data[dist_headings]        
 
         dest_name = "{}.csv".format(heading)
         dist_data.to_csv(dest_name, mode="w+", index=False, header=False)
