@@ -29,7 +29,7 @@ CREATE TABLE District_Read (
     D_ZIP CHAR(9), 
     D_TAX DECIMAL(4, 4), 
     PRIMARY KEY (D_W_ID, D_ID), 
-    FOREIGN KEY D_ID REFERENCES Warehouse
+    FOREIGN KEY D_ID REFERENCES Warehouse_Read
 )
 
 CREATE TABLE District_Write (
@@ -38,7 +38,7 @@ CREATE TABLE District_Write (
     D_YTD DECIMAL(12, 2), 
     D_NEXT_O_ID INTEGER, 
     PRIMARY KEY (D_W_ID, D_ID), 
-    FOREIGN KEY D_ID REFERENCES Warehouse
+    FOREIGN KEY D_ID REFERENCES Warehouse_Read
 )
 
 CREATE TABLE Customer_Read (
@@ -59,7 +59,7 @@ CREATE TABLE Customer_Read (
     C_CREDIT_LIM DECIMAL(12, 2), 
     C_DISCOUNT DECIMAL(4, 4), 
     PRIMARY KEY (C_W_ID, C_D_ID, C_ID), 
-    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District
+    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District_Read
 );
 
 CREATE TABLE Customer_Write (
@@ -71,7 +71,7 @@ CREATE TABLE Customer_Write (
     C_PAYMENT_CNT INT, 
     C_DELIVERY_CNT INT, 
     PRIMARY KEY (C_W_ID, C_D_ID, C_ID), 
-    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District
+    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District_Read
 );
 
 CREATE TABLE Customer_Misc (
@@ -80,7 +80,7 @@ CREATE TABLE Customer_Misc (
     C_ID INTEGER,
     C_DATA VARCHAR(500), 
     PRIMARY KEY (C_W_ID, C_D_ID, C_ID), 
-    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District
+    FOREIGN KEY (C_W_ID, C_D_ID) REFERENCES District_Read
 )
 
 CREATE TABLE Order_Read (
@@ -92,7 +92,7 @@ CREATE TABLE Order_Read (
     O_ALL_LOCAL DECIMAL(1, 0), -- True or False 
     O_ENTRY_ID TIMESTAMP
     PRIMARY KEY (O_W_ID, O_D_ID, O_ID), 
-    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer, 
+    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer_Read, 
 );
 
 CREATE TABLE Order_Write (
@@ -102,7 +102,7 @@ CREATE TABLE Order_Write (
     O_C_ID INTEGER, 
     O_CARRIER_ID INTEGER, -- Create Index? Care of NULL
     PRIMARY KEY (O_W_ID, O_D_ID, O_ID), 
-    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer, 
+    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer_Read, 
     CHECK O_CARRIER_ID >= 1 AND O_CARRIER_ID <= 10
 );
 
@@ -131,8 +131,8 @@ CREATE TABLE OrderLine_Read (
     OL_QUANTITY DECIMAL(2, 0), 
     OL_DIST_INFO CHAR(24)
     PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER), 
-    FOREIGN KEY (OL_W_ID, OL_D_ID, OL_O_ID) REFERENCES Order, 
-    FOREIGN KEY (OL_I_ID) REFERENCES Item, 
+    FOREIGN KEY (OL_W_ID, OL_D_ID, OL_O_ID) REFERENCES Order_Read, 
+    FOREIGN KEY (OL_I_ID) REFERENCES Item_Read, 
 );
 
 CREATE TABLE OrderLine_Write (
@@ -143,8 +143,8 @@ CREATE TABLE OrderLine_Write (
     OL_I_ID INTEGER, 
     OL_DELIVERY_D TIMESTAMP, 
     PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER), 
-    FOREIGN KEY (OL_W_ID, OL_D_ID, OL_O_ID) REFERENCES Order, 
-    FOREIGN KEY (OL_I_ID) REFERENCES Item, 
+    FOREIGN KEY (OL_W_ID, OL_D_ID, OL_O_ID) REFERENCES Order_Read, 
+    FOREIGN KEY (OL_I_ID) REFERENCES Item_Read, 
 );
 
 CREATE TABLE Stock_Write (
@@ -155,9 +155,9 @@ CREATE TABLE Stock_Write (
     S_ORDER_CNT INTEGER, 
     S_REMOTE_CNT INTEGER, 
     PRIMARY KEY (S_W_ID, S_I_ID), 
-    FOREIGN KEY (S_W_ID) REFERENCES Warehouse, 
-    FOREIGN KEY (S_I_ID) REFERENCES Item
-)
+    FOREIGN KEY (S_W_ID) REFERENCES Warehouse_Read, 
+    FOREIGN KEY (S_I_ID) REFERENCES Item_Read
+);
 
 CREATE TABLE Stock_Misc (
     S_W_ID INTEGER, 
@@ -174,25 +174,30 @@ CREATE TABLE Stock_Misc (
     S_DIST_10 CHAR(24),
     S_DATA VARCHAR(50), 
     PRIMARY KEY (S_W_ID, S_I_ID), 
-    FOREIGN KEY (S_W_ID) REFERENCES Warehouse, 
-    FOREIGN KEY (S_I_ID) REFERENCES Item
+    FOREIGN KEY (S_W_ID) REFERENCES Warehouse_Read, 
+    FOREIGN KEY (S_I_ID) REFERENCES Item_Read
 );
 
 -- run `cd seed/ && python3 -m http.server 3000` in xcnd36
 
-IMPORT INTO Warehouse CSV DATA ('http://xcnd36:3000/data_files_A/warehouse.csv') WITH nullif = 'null';
-IMPORT INTO District CSV DATA ('http://xcnd36:3000/data_files_A/district.csv') WITH nullif = 'null';
-IMPORT INTO Customer CSV DATA ('http://xcnd36:3000/data_files_A/customer.csv') WITH nullif = 'null';
-IMPORT INTO Orders CSV DATA ('http://xcnd36:3000/data_files_A/order.csv') WITH nullif = 'null';
-IMPORT INTO Item CSV DATA ('http://xcnd36:3000/data_files_A/item.csv') WITH nullif = 'null';
-IMPORT INTO OrderLine CSV DATA ('http://xcnd36:3000/data_files_A/order-line.csv') WITH nullif = 'null';
-IMPORT INTO Stock CSV DATA ('http://xcnd36:3000/data_files_A/stock.csv') WITH nullif = 'null';
+IMPORT INTO Warehouse_Read CSV DATA ('http://xcnd36:3000/dist_data_files/warehouse_read_headers.csv') WITH nullif = 'null';
+IMPORT INTO Warehouse_Write CSV DATA ('http://xcnd36:3000/dist_data_files/warehouse_write_headers.csv') WITH nullif = 'null';
 
-ALTER TABLE District VALIDATE CONSTRAINT fk_d_id_ref_warehouse;
-ALTER TABLE Customer VALIDATE CONSTRAINT fk_c_w_id_ref_district;
-ALTER TABLE Orders VALIDATE CONSTRAINT check_o_carrier_id_o_carrier_id;
-ALTER TABLE Orders VALIDATE CONSTRAINT fk_o_w_id_ref_customer;
-ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_i_id_ref_item;
-ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_w_id_ref_orders;
-ALTER TABLE Stock VALIDATE CONSTRAINT fk_s_i_id_ref_item;
-ALTER TABLE Stock VALIDATE CONSTRAINT fk_s_w_id_ref_warehouse;
+IMPORT INTO District_Read CSV DATA ('http://xcnd36:3000/dist_data_files/district_read_headers.csv') WITH nullif = 'null';
+IMPORT INTO District_Write CSV DATA ('http://xcnd36:3000/dist_data_files/district_write_headers.csv') WITH nullif = 'null';
+
+IMPORT INTO Customer_Read CSV DATA ('http://xcnd36:3000/dist_data_files/customer_read_headers.csv') WITH nullif = 'null';
+IMPORT INTO Customer_Write CSV DATA ('http://xcnd36:3000/dist_data_files/customer_write_headers.csv') WITH nullif = 'null';
+IMPORT INTO Customer_Misc CSV DATA ('http://xcnd36:3000/dist_data_files/customer_misc_headers.csv') WITH nullif = 'null';
+
+IMPORT INTO Order_Read CSV DATA ('http://xcnd36:3000/dist_data_files/order_read_headers.csv') WITH nullif = 'null';
+IMPORT INTO Order_Write CSV DATA ('http://xcnd36:3000/dist_data_files/order_write_headers.csv') WITH nullif = 'null';
+
+IMPORT INTO Item_Read CSV DATA ('http://xcnd36:3000/dist_data_files/item_read_headers.csv') WITH nullif = 'null';
+IMPORT INTO Item_Misc CSV DATA ('http://xcnd36:3000/dist_data_files/item_misc_headers.csv') WITH nullif = 'null';
+
+IMPORT INTO OrderLine_Read CSV DATA ('http://xcnd36:3000/dist_data_files/order_line_read_headers.csv') WITH nullif = 'null';
+IMPORT INTO OrderLine_Write CSV DATA ('http://xcnd36:3000/dist_data_files/order_line_write_headers.csv') WITH nullif = 'null';
+
+IMPORT INTO Stock_Write CSV DATA ('http://xcnd36:3000/dist_data_files/stock_write_headers.csv') WITH nullif = 'null';
+IMPORT INTO Stock_Misc CSV DATA ('http://xcnd36:3000/dist_data_files/stock_misc_headers.csv') WITH nullif = 'null';
