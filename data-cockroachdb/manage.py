@@ -22,7 +22,7 @@ for name in file_names:
     file_address = fileserver_name.format(name)
 
     raw_headings = raw_header_mappings[name]
-    data = pd.read_csv(file_address, , dtype=str, names=raw_headings)
+    data = pd.read_csv(file_address, dtype=str, names=raw_headings)
 
     dist_heading_names = raw_to_dist_mappings[name]
 
