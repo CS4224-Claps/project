@@ -33,7 +33,7 @@ CREATE TABLE District_Read (
     D_ZIP CHAR(9), 
     D_TAX DECIMAL(4, 4), 
     PRIMARY KEY (D_W_ID, D_ID), 
-    FOREIGN KEY D_W_ID REFERENCES Warehouse_Read(W_ID)
+    FOREIGN KEY (D_W_ID) REFERENCES Warehouse_Read(W_ID)
 )
 
 CREATE TABLE District_Write (
@@ -42,7 +42,7 @@ CREATE TABLE District_Write (
     D_YTD DECIMAL(12, 2), 
     D_NEXT_O_ID INTEGER, 
     PRIMARY KEY (D_W_ID, D_ID), 
-    FOREIGN KEY D_W_ID REFERENCES Warehouse_Read(W_ID)
+    FOREIGN KEY (D_W_ID) REFERENCES Warehouse_Read(W_ID)
 )
 
 CREATE TABLE Customer_Read (
