@@ -186,24 +186,24 @@ CREATE TABLE Stock_Misc (
 
 -- run `cd seed/ && python3 -m http.server 3000` in xcnd36
 
-IMPORT INTO Warehouse_Read CSV DATA ('http://xcnd36:3000/dist_data_files/warehouse_read_headers.csv') WITH nullif = 'null';
-IMPORT INTO Warehouse_Write CSV DATA ('http://xcnd36:3000/dist_data_files/warehouse_write_headers.csv') WITH nullif = 'null';
+IMPORT INTO Warehouse_Read CSV DATA ('http://xcnd36:3000/dist_data_files/warehouse_read_headers.csv') WITH nullif = '';
+IMPORT INTO Warehouse_Write CSV DATA ('http://xcnd36:3000/dist_data_files/warehouse_write_headers.csv') WITH nullif = '';
 
-IMPORT INTO District_Read CSV DATA ('http://xcnd36:3000/dist_data_files/district_read_headers.csv') WITH nullif = 'null';
-IMPORT INTO District_Write CSV DATA ('http://xcnd36:3000/dist_data_files/district_write_headers.csv') WITH nullif = 'null';
+IMPORT INTO District_Read CSV DATA ('http://xcnd36:3000/dist_data_files/district_read_headers.csv') WITH nullif = '';
+IMPORT INTO District_Write CSV DATA ('http://xcnd36:3000/dist_data_files/district_write_headers.csv') WITH nullif = '';
 
-IMPORT INTO Customer_Read CSV DATA ('http://xcnd36:3000/dist_data_files/customer_read_headers.csv') WITH nullif = 'null';
-IMPORT INTO Customer_Write CSV DATA ('http://xcnd36:3000/dist_data_files/customer_write_headers.csv') WITH nullif = 'null';
-IMPORT INTO Customer_Misc CSV DATA ('http://xcnd36:3000/dist_data_files/customer_misc_headers.csv') WITH nullif = 'null';
+IMPORT INTO Customer_Read CSV DATA ('http://xcnd36:3000/dist_data_files/customer_read_headers.csv') WITH nullif = '';
+IMPORT INTO Customer_Write CSV DATA ('http://xcnd36:3000/dist_data_files/customer_write_headers.csv') WITH nullif = '';
+IMPORT INTO Customer_Misc CSV DATA ('http://xcnd36:3000/dist_data_files/customer_misc_headers.csv') WITH nullif = '';
 
-IMPORT INTO Order_Read CSV DATA ('http://xcnd36:3000/dist_data_files/order_read_headers.csv') WITH nullif = 'null';
-IMPORT INTO Order_Write CSV DATA ('http://xcnd36:3000/dist_data_files/order_write_headers.csv') WITH nullif = 'null';
+IMPORT INTO Order_Read CSV DATA ('http://xcnd36:3000/dist_data_files/order_read_headers.csv') WITH nullif = '';
+IMPORT INTO Order_Write CSV DATA ('http://xcnd36:3000/dist_data_files/order_write_headers.csv') WITH nullif = '';
 
-IMPORT INTO Item_Read CSV DATA ('http://xcnd36:3000/dist_data_files/item_read_headers.csv') WITH nullif = 'null';
-IMPORT INTO Item_Misc CSV DATA ('http://xcnd36:3000/dist_data_files/item_misc_headers.csv') WITH nullif = 'null';
+IMPORT INTO Item_Read CSV DATA ('http://xcnd36:3000/dist_data_files/item_read_headers.csv') WITH nullif = '';
+IMPORT INTO Item_Misc CSV DATA ('http://xcnd36:3000/dist_data_files/item_misc_headers.csv') WITH nullif = '';
 
-IMPORT INTO OrderLine_Read CSV DATA ('http://xcnd36:3000/dist_data_files/order_line_read_headers.csv') WITH nullif = 'null';
-IMPORT INTO OrderLine_Write CSV DATA ('http://xcnd36:3000/dist_data_files/order_line_write_headers.csv') WITH nullif = 'null';
+IMPORT INTO OrderLine_Read CSV DATA ('http://xcnd36:3000/dist_data_files/order_line_read_headers.csv') WITH nullif = '';
+IMPORT INTO OrderLine_Write CSV DATA ('http://xcnd36:3000/dist_data_files/order_line_write_headers.csv') WITH nullif = '';
 
-IMPORT INTO Stock_Write CSV DATA ('http://xcnd36:3000/dist_data_files/stock_write_headers.csv') WITH nullif = 'null';
-IMPORT INTO Stock_Misc CSV DATA ('http://xcnd36:3000/dist_data_files/stock_misc_headers.csv') WITH nullif = 'null';
+IMPORT INTO Stock_Write CSV DATA ('http://xcnd36:3000/dist_data_files/stock_write_headers.csv') WITH nullif = '';
+IMPORT INTO Stock_Misc CSV DATA ('http://xcnd36:3000/dist_data_files/stock_misc_headers.csv') WITH nullif = '';
