@@ -1,6 +1,10 @@
 CREATE DATABASE IF NOT EXISTS a_dist;
 USE a_dist;
 
+DROP TABLE IF EXISTS Warehouse_Read, Warehouse_Write, District_Read, District_Write, 
+Customer_Read, Customer_Write, Customer_Misc, Order_Read, Order_Write, Item_Read, 
+Item_Misc, OrderLine_Read, OrderLine_Write, Stock_Write, Stock_Misc;
+
 CREATE TABLE Warehouse_Read (
     W_ID INTEGER, 
     W_NAME VARCHAR(10), 
