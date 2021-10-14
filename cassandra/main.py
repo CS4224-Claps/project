@@ -3,6 +3,7 @@ from utils.cli import parse_cli
 from utils.connection import connection
 from utils.transaction import run_xact
 
+
 def main():
     cli_args = parse_cli()
     ff = cli_args.infile

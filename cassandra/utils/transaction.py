@@ -9,6 +9,7 @@ command_to_func = {
    ## "R": related_customer
 }
 
+
 def run_xact(xact_type, session, *args):
     if xact_type in command_to_func:
         xact = command_to_func.get(xact_type)
