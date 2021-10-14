@@ -7,7 +7,6 @@ warehouse_read_headers = [
     'w_state',
     'w_zip',
     'w_tax',
-    'w_ytd',
 ]
 
 warehouse_write_headers = [
