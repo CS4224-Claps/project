@@ -8,7 +8,7 @@ from utils.mappings import (
 from utils.raw_headers import raw_header_mappings 
 from utils.dist_headers import dist_header_mappings
 
-raw_to_dist_mappings: {
+raw_to_dist_mappings = {
     'warehouse': ['warehouse_read_headers', 'warehouse_write_headers'], 
     'district': ['district_read_headers', 'district_write_headers'], 
     'customer': ['customer_read_headers', 'customer_write_headers', 'customer_misc_headers'], 
