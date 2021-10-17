@@ -37,7 +37,7 @@ def execute(conn, io_line):
         d_addr = cur.fetchone()
 
         sql = """
-            UPDATE District
+            UPDATE District_Write
                 SET D_YTD = D_YTD + (%s)
                 WHERE D_W_ID = (%s) AND D_ID = (%s);
         """
