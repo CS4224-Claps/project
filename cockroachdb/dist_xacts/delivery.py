@@ -34,7 +34,7 @@ def execute(conn, io_line):
             sql = """
                 UPDATE Orders 
                     SET O_CARRIER_ID = %s
-                    WHERE O_W_ID =  %s O_D_ID = %s AND O_ID = %s;
+                    WHERE O_W_ID = %s AND O_D_ID = %s AND O_ID = %s;
             """
 
             cur.execute(sql, 
