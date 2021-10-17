@@ -32,7 +32,7 @@ def execute(conn, io_line):
             logging.debug("delivery: modifying %s %s", o_id, c_id)
 
             sql = """
-                UPDATE Orders 
+                UPDATE Order_Write
                     SET O_CARRIER_ID = %s
                     WHERE O_W_ID = %s AND O_D_ID = %s AND O_ID = %s;
             """
