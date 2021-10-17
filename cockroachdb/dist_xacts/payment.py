@@ -42,8 +42,7 @@ def execute(conn, io_line):
                 WHERE D_W_ID = (%s) AND D_ID = (%s);
         """
         cur.execute(sql, (pay_amt, w_id, d_id))
-        d_addr = cur.fetchone()
-
+        
         # (3) Update customer (W_ID, D_ID, C_ID)
         sql = """
             SELECT * 
