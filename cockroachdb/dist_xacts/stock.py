@@ -31,7 +31,7 @@ def execute(conn, io_line):
                 WHERE S_W_ID = %s AND S_QUANTITY < %s
                     AND S_I_ID IN (
                         SELECT DISTINCT OL_I_ID
-                            FROM OrderLine
+                            FROM OrderLine_Read
                             WHERE OL_W_ID = %s AND OL_D_ID = %s 
                                 AND OL_O_ID >= %s - %s AND OL_O_ID < %s
                     );
