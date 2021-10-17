@@ -17,7 +17,7 @@ def execute(conn, io_line):
                 FROM Warehouse_Read 
                 WHERE W_ID = (%s);
         """
-        cur.execute(sql, (wid, ))
+        cur.execute(sql, (w_id, ))
         w_addr = cur.fetchone() 
 
         sql = """
