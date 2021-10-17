@@ -12,7 +12,7 @@ def execute(conn, io_line):
     with conn.cursor() as cur:
         get_cust_info = """
             SELECT concat_ws(' ', C_FIRST, C_MIDDLE, C_LAST) as C_NAME, C_BALANCE
-            FROM Customer_Read
+            FROM Customer_Read NATURAL JOIN Customer_write
             WHERE C_W_ID = (%s) AND C_D_ID = (%s) AND C_ID = (%s)
         """
         cur.execute(get_cust_info, (w_id, d_id, c_id))
