@@ -20,7 +20,7 @@ def execute(conn, io_line, data_lines=[]):
         """
         cur.execute(sql, (w_id, d_id))
         row = cur.fetchone() 
-        d_tax = int(row[0])
+        d_tax = float(row[0])
 
         sql = """
             UPDATE District_Write
