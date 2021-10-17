@@ -6,7 +6,7 @@ from utils.connection import TimeLoggingConnection
 from utils.logging import init_logger
 from utils.parser import next_xact
 from utils.transactions import run_transaction
-from xacts import (
+from dist_xacts import (
     new_order,
     payment,
     delivery,
