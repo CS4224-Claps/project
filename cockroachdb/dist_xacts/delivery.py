@@ -61,8 +61,7 @@ def execute(conn, io_line):
                 sql = """
                     UPDATE OrderLine_Write
                         SET OL_DELIVERY_D = %s 
-                        WHERE OL_W_ID = %s AND OL_D_ID = %s AND OL_O_ID = %s AND OL_NUMBER = %s
-                        RETURNING OL_AMOUNT; 
+                        WHERE OL_W_ID = %s AND OL_D_ID = %s AND OL_O_ID = %s AND OL_NUMBER = %s;
                 """
 
                 cur.execute(sql, 
