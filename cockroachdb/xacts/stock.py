@@ -10,7 +10,7 @@ def execute(conn, io_line):
     w_id, d_id, t, l = map(int, io_line[1:])
 
     with conn.cursor() as cur:
-        cur.execute("SET TRANSACTION AS OF SYSTEM TIME '-5s'")
+        cur.execute("SET TRANSACTION AS OF SYSTEM TIME '-30s'")
 
         # (1) Get D_NEXT_O_ID Given (W_ID, D_ID)
         sql = """

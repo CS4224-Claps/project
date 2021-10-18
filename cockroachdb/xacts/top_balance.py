@@ -5,7 +5,7 @@ from utils.decorators import validate_command, log_command
 @log_command
 def execute(conn, io_line):
     with conn.cursor() as cur:
-        cur.execute("SET TRANSACTION AS OF SYSTEM TIME '-5s'")
+        cur.execute("SET TRANSACTION AS OF SYSTEM TIME '-30s'")
 
         sql = """
             SELECT concat_ws(' ', c_first, c_middle, c_last) as c_name, c_balance, w_name, d_name
