@@ -80,10 +80,10 @@ CREATE TABLE IF NOT EXISTS Orders (
 );
 
 CREATE TABLE IF NOT EXISTS Carrier (
-    id PRIMARY KEY, 
-    O_CARRIER_ID  
+    id PRIMARY KEY,
+    O_CARRIER_ID
 ) AS
-SELECT id, O_CARRIER_ID FROM Orders; 
+SELECT id, O_CARRIER_ID FROM Orders;
 
 CREATE TABLE IF NOT EXISTS Item (
     I_ID INTEGER PRIMARY KEY,
@@ -144,12 +144,14 @@ IMPORT INTO Item CSV DATA ('http://xcnd36:3000/data_files/item.csv') WITH nullif
 IMPORT INTO OrderLine CSV DATA ('http://xcnd36:3000/data_files/order-line.csv') WITH nullif = 'null';
 IMPORT INTO Stock CSV DATA ('http://xcnd36:3000/data_files/stock.csv') WITH nullif = 'null';
 
-ALTER TABLE Orders DROP COLUMN O_CARRIER_ID; 
-ALTER TABLE Carrier ADD CONSTRAINT valid_carrier CHECK (O_CARRIER_ID >= 1 AND O_CARRIER_ID <= 10);
+ALTER TABLE Orders DROP COLUMN O_CARRIER_ID;
 ALTER TABLE District VALIDATE CONSTRAINT fk_d_id_ref_warehouse;
 ALTER TABLE Customer VALIDATE CONSTRAINT fk_c_w_id_ref_district;
 ALTER TABLE Orders VALIDATE CONSTRAINT fk_o_w_id_ref_customer;
+ALTER TABLE Carrier ADD CONSTRAINT valid_carrier CHECK (O_CARRIER_ID >= 1 AND O_CARRIER_ID <= 10);
 ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_i_id_ref_item;
 ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_w_id_ref_orders;
 ALTER TABLE Stock VALIDATE CONSTRAINT fk_s_i_id_ref_item;
 ALTER TABLE Stock VALIDATE CONSTRAINT fk_s_w_id_ref_warehouse;
+
+CREATE INDEX balance on Customer (C_BALANCE DESC);
