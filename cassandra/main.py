@@ -1,20 +1,24 @@
-from cassandra import ConsistencyLevel
-from cassandra.cluster import Cluster
-from cassandra.cluster import ExecutionProfile
-from cassandra.policies import RoundRobinPolicy, RetryPolicy
+from utils.parser import parse_xact
+from utils.cli import parse_cli
+from utils.connection import connection
+from utils.transaction import run_xact
 
-
-# according to nodetool status here are the ips I have retrieved
-# 192.168.48.255 ,192.168.51.0, 192.168.51.2, 192.168.51.1, 192.168.48.254
 
 def main():
-    contact_points =['192.168.48.255', '192.168.51.0', '192.168.51.2', '192.168.51.1', '192.168.48.254']
-    cluster_profile = ExecutionProfile(load_balancing_policy=RoundRobinPolicy(), consistency_level=ConsistencyLevel.QUORUM)
-    cluster = Cluster(contact_points, execution_profiles={"profile":cluster_profile})
-    session = cluster.connect()
-    r = session.execute("SELECT * FROM system_schema.keyspaces;")
-    print(r.current_rows)
+    cli_args = parse_cli()
+    ff = cli_args.infile
+    session = connection()
 
+    with ff as f:
+        while True:
+            xact = parse_xact(f)
+            if not xact:
+                break
+            xact_type, *args = xact
+
+            #run_xact(xact_type, session, *args)
+
+    session.shutdown()
 
 if __name__ == "__main__":
     main()
