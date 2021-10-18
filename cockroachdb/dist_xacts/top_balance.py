@@ -6,23 +6,37 @@ from utils.decorators import validate_command, log_command
 def execute(conn, io_line):    
     with conn.cursor() as cur:
         sql = """
-            SELECT concat_ws(' ', c_first, c_middle, c_last) as c_name, c_balance, w_name, d_name
-                FROM (Customer_Read NATURAL JOIN Customer_Write)
-                INNER JOIN Warehouse_Read on w_id = c_w_id
-                INNER JOIN District_Read on d_w_id = c_w_id and d_id = c_d_id
-                WHERE (c_w_id, c_d_id, c_id) IN (
-                    SELECT c_w_id, c_d_id, c_id 
-                        FROM Customer_Write 
-                        ORDER BY c_balance DESC 
-                        LIMIT 10
-                );
+            SELECT C_W_ID, C_D_ID, concact_wd(' ', C_FIRST, C_MIDDLE, C_LAST) AS C_NAME, C_BALANCE
+                FROM Customer_Read NATURAL JOIN Customer_Write 
+                ORDER BY C_BALANCE DESC 
+                LIMIT 10; 
         """
-
         cur.execute(sql)
         customers = cur.fetchall()
 
         print("Customers: ")
+
         for customer in customers: 
-            print(*customer)
+            w_id, d_id, c_name, c_balance = customer     
+                
+            sql = """
+                SELECT W_NAME 
+                    FROM Warehouse_Read 
+                    WHERE W_ID = %s;
+            """
+            
+            cur.execute(sql)
+            w_name, = cur.fetchone()
+
+            sql = """
+                SELECT D_NAME 
+                    FROM District_Read 
+                    WHERE D_W_ID = %s AND D_ID = %s;
+            """
+            cur.execute(sql)
+            d_name = cur.fetchone()
+
+            print(c_name, c_balance, w_name, d_name)
 
     conn.commit()
+
