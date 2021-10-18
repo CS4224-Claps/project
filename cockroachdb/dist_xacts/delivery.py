@@ -25,10 +25,12 @@ def execute(conn, io_line):
             cur.execute(sql, 
                 (w_id, d_id)
             )
-            if cur.description is None:
+            row = cur.fetchone()
+
+            if row is None or row[0] is None or row[1] is None:
                 continue
 
-            o_id, c_id = cur.fetchone()
+            o_id, c_id = row
             logging.debug("delivery: modifying %s %s", o_id, c_id)
 
             sql = """
