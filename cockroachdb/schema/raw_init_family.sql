@@ -76,9 +76,14 @@ CREATE TABLE IF NOT EXISTS Orders (
     O_ALL_LOCAL DECIMAL(1, 0), -- True or False
     O_ENTRY_D TIMESTAMP,
     UNIQUE (O_W_ID, O_D_ID, O_ID ASC),
-    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer(C_W_ID, C_D_ID, C_ID),
-    CONSTRAINT valid_carrier CHECK (O_CARRIER_ID >= 1 AND O_CARRIER_ID <= 10)
+    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer(C_W_ID, C_D_ID, C_ID)
 );
+
+CREATE TABLE IF NOT EXISTS Carrier (
+    id PRIMARY KEY, 
+    O_CARRIER_ID  
+) AS
+SELECT id, O_CARRIER_ID FROM Orders; 
 
 CREATE TABLE IF NOT EXISTS Item (
     I_ID INTEGER PRIMARY KEY,
@@ -139,9 +144,10 @@ IMPORT INTO Item CSV DATA ('http://xcnd36:3000/data_files/item.csv') WITH nullif
 IMPORT INTO OrderLine CSV DATA ('http://xcnd36:3000/data_files/order-line.csv') WITH nullif = 'null';
 IMPORT INTO Stock CSV DATA ('http://xcnd36:3000/data_files/stock.csv') WITH nullif = 'null';
 
+ALTER TABLE Orders DROP COLUMN O_CARRIER_ID; 
+ALTER TABLE Carrier ADD CONSTRAINT valid_carrier CHECK (O_CARRIER_ID >= 1 AND O_CARRIER_ID <= 10);
 ALTER TABLE District VALIDATE CONSTRAINT fk_d_id_ref_warehouse;
 ALTER TABLE Customer VALIDATE CONSTRAINT fk_c_w_id_ref_district;
-ALTER TABLE Orders VALIDATE CONSTRAINT valid_carrier;
 ALTER TABLE Orders VALIDATE CONSTRAINT fk_o_w_id_ref_customer;
 ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_i_id_ref_item;
 ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_w_id_ref_orders;
