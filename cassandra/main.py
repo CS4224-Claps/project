@@ -15,8 +15,7 @@ def main():
             if not xact:
                 break
             xact_type, *args = xact
-
-            #run_xact(xact_type, session, *args)
+            run_xact(xact_type, session, *args)
 
     session.shutdown()
 
