@@ -3,11 +3,14 @@ import os
 import shutil
 import subprocess
 
+from collections import defaultdict
+
 LOAD_WAREHOUSE = "COPY wholesale.Warehouse (W_ID, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, W_TAX, W_YTD) FROM '{}';"
 LOAD_DISTRICT = "COPY wholesale.District (D_W_ID, D_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, D_TAX, D_YTD, D_NEXT_O_ID, W_TAX) FROM '{}';"
 LOAD_CUSTOMER = "COPY wholesale.Customer (C_W_ID, C_D_ID, C_ID, C_FIRST, C_MIDDLE, C_LAST, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_CREDIT, C_CREDIT_LIM, C_DISCOUNT, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_DATA, W_NAME, D_NAME) FROM '{}';"
 LOAD_ORDER = "COPY wholesale.Orders (O_W_ID, O_D_ID, O_ID, O_C_ID, O_CARRIER_ID, O_OL_CNT, O_ALL_LOCAL, O_ENTRY_D) FROM '{}' WITH NULL = 'null';"
-LOAD_ITEM = "COPY wholesale.Item (I_ID, I_NAME, I_PRICE, I_IM_ID, I_DATA) FROM '{}';"
+LOAD_ITEM_A = "COPY wholesale.Item (I_ID, I_NAME, I_PRICE, I_IM_ID, I_DATA) FROM '{}';"
+LOAD_ITEM_B = "COPY wholesale.Item (I_ID, I_NAME, I_PRICE, I_IM_ID, I_DATA, ORDER_SET) FROM '{}';"
 LOAD_ORDERLINE = "COPY wholesale.OrderLine (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER, OL_I_ID, OL_DELIVERY_D, OL_AMOUNT, OL_SUPPLY_W_ID, OL_QUANTITY, OL_DIST_INFO, I_NAME) FROM '{}' WITH NULL = 'null';"
 LOAD_STOCK = "COPY wholesale.Stock (S_W_ID, S_I_ID, S_QUANTITY, S_YTD, S_ORDER_CNT, S_REMOTE_CNT, S_DIST_01, S_DIST_02, S_DIST_03, S_DIST_04, S_DIST_05, S_DIST_06, S_DIST_07, S_DIST_08, S_DIST_09, S_DIST_10, S_DATA, I_PRICE, I_NAME) FROM '{}';"
 
@@ -20,14 +23,25 @@ ITEM = 'item.csv'
 ORDERLINE = 'order-line.csv'
 STOCK = 'stock.csv'
 
-def setup(session, schema_file, data_folder):
+def setup_A(session, schema_file, data_folder):
     """
-    Initialises the database.
+    Initialises the database for transaction workload A.
     """
     create_temp_folder()
     create_tables(session, schema_file)
     add_duplicated_fields(data_folder)
     load_data(data_folder)
+    del_temp_folder()
+
+def setup_B(session, schema_file, data_folder):
+    """
+    Initialises the database for transaction workload B.
+    """
+    create_temp_folder()
+    create_tables(session, schema_file)
+    add_duplicated_fields(data_folder)
+    add_ordersets_to_item(data_folder)
+    load_data(data_folder, is_B=True)
     del_temp_folder()
 
 def create_tables(session, schema_file):
@@ -102,7 +116,38 @@ def add_attrs_to_table(from_csv, to_csv, new_csv, from_pk_indices, to_pk_indices
             row.extend(attrs)
             to_writer.writerow(row)
 
-def load_data(data_folder):
+def add_ordersets_to_item(data_folder):
+    """
+    For each item, add the set of orders that it belongs to.
+    The set contains tuples of (w_id, d_id, o_id, c_id)
+    """
+    with open(os.path.join(data_folder, ORDERLINE), 'r') as orderline, \
+         open(os.path.join(data_folder, ORDER), 'r') as order, \
+         open(os.path.join(data_folder, ITEM), 'r') as old_item, \
+         open(os.path.join(TEMP, ITEM), 'w') as new_item:
+        # Create a map of order identifiers to c_id
+        order_cid_map = {}
+        order_reader = csv.reader(order)
+        for row in order_reader:
+            order_cid_map[(row[0], row[1], row[2])] = row[3]
+        orderline_reader = csv.reader(orderline)
+        # Create a map of I_ID to order identifier
+        item_orders_map = defaultdict(set)
+        for row in orderline_reader:
+            # Assemble the (w_id, d_id, o_id, c_id)
+            i_id = row[4]
+            order_id = (row[0], row[1], row[2])
+            order_id += (order_cid_map[order_id],)
+            item_orders_map[i_id].add(order_id)
+
+        item_reader = csv.reader(old_item)
+        item_writer = csv.writer(new_item)
+        for row in item_reader:
+            order_set = item_orders_map[row[0]]
+            row.append(str(order_set))
+            item_writer.writerow(row)
+
+def load_data(data_folder, is_B=False):
     """
     Loads data from the data_folder for unmodified csvs, and the TEMP folder for modified csvs.
     This uses the COPY command which is only usable in cqlsh, not via the python driver.
@@ -112,7 +157,10 @@ def load_data(data_folder):
     subprocess.run(cmd, input=LOAD_DISTRICT.format(os.path.join(TEMP, DISTRICT)), encoding='utf-8')
     subprocess.run(cmd, input=LOAD_CUSTOMER.format(os.path.join(TEMP, CUSTOMER)), encoding='utf-8')
     subprocess.run(cmd, input=LOAD_ORDER.format(os.path.join(data_folder, ORDER)), encoding='utf-8')
-    subprocess.run(cmd, input=LOAD_ITEM.format(os.path.join(data_folder, ITEM)), encoding='utf-8')
+    if is_B:
+        subprocess.run(cmd, input=LOAD_ITEM_B.format(os.path.join(TEMP, ITEM)), encoding='utf-8')
+    else:
+        subprocess.run(cmd, input=LOAD_ITEM_A.format(os.path.join(data_folder, ITEM)), encoding='utf-8')
     subprocess.run(cmd, input=LOAD_ORDERLINE.format(os.path.join(TEMP, ORDERLINE)), encoding='utf-8')
     subprocess.run(cmd, input=LOAD_STOCK.format(os.path.join(TEMP, STOCK)), encoding='utf-8')
 

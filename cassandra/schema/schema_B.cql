@@ -1,0 +1,149 @@
+DROP KEYSPACE IF EXISTS wholesale;
+CREATE KEYSPACE IF NOT EXISTS wholesale WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};
+USE wholesale;
+
+-- Creating tables
+DROP TABLE IF EXISTS Warehouse;
+CREATE TABLE Warehouse (
+    W_ID INT,
+    W_NAME TEXT,
+    W_STREET_1 TEXT,
+    W_STREET_2 TEXT,
+    W_CITY TEXT,
+    W_STATE TEXT,
+    W_ZIP TEXT,
+    W_TAX DECIMAL,
+    W_YTD DECIMAL,
+    PRIMARY KEY ((W_ID))
+);
+
+DROP TABLE IF EXISTS District;
+CREATE TABLE District (
+    D_W_ID INT,
+    D_ID INT,
+    D_NAME TEXT,
+    D_STREET_1 TEXT,
+    D_STREET_2 TEXT,
+    D_CITY TEXT,
+    D_STATE TEXT,
+    D_ZIP TEXT,
+    D_TAX DECIMAL,
+    D_YTD DECIMAL,
+    D_NEXT_O_ID INT,
+    W_TAX DECIMAL, -- optimise transaction 1
+    PRIMARY KEY ((D_W_ID, D_ID))
+);
+
+DROP MATERIALIZED VIEW IF EXISTS Customer_by_balance;
+DROP TABLE IF EXISTS Customer;
+CREATE TABLE Customer (
+    C_W_ID INT,
+    C_D_ID INT,
+    C_ID INT,
+    C_FIRST TEXT,
+    C_MIDDLE TEXT,
+    C_LAST TEXT,
+    C_STREET_1 TEXT,
+    C_STREET_2 TEXT,
+    C_CITY TEXT,
+    C_STATE TEXT,
+    C_ZIP TEXT,
+    C_PHONE TEXT,
+    C_SINCE TIMESTAMP,
+    C_CREDIT TEXT,
+    C_CREDIT_LIM DECIMAL,
+    C_DISCOUNT DECIMAL,
+    C_BALANCE DECIMAL,
+    C_YTD_PAYMENT FLOAT,
+    C_PAYMENT_CNT INT,
+    C_DELIVERY_CNT INT,
+    C_DATA TEXT,
+    W_NAME TEXT, -- optimise transaction 7
+    D_NAME TEXT, -- optimise transaction 7
+    PRIMARY KEY ((C_W_ID, C_D_ID), C_ID)
+);
+
+DROP MATERIALIZED VIEW IF EXISTS Orders_by_cid;
+DROP TABLE IF EXISTS Orders; -- Order is a reserved word
+CREATE TABLE Orders (
+    O_W_ID INT,
+    O_D_ID INT,
+    O_ID INT,
+    O_C_ID INT,
+    O_CARRIER_ID INT,
+    O_OL_CNT DECIMAL,
+    O_ALL_LOCAL DECIMAL,
+    O_ENTRY_D TIMESTAMP,
+    PRIMARY KEY ((O_W_ID, O_D_ID), O_ID)
+)
+WITH CLUSTERING ORDER BY (O_ID ASC); -- optimise transaction 3
+
+DROP TABLE IF EXISTS Item;
+CREATE TABLE Item (
+    I_ID INT,
+    I_NAME TEXT,
+    I_PRICE DECIMAL,
+    I_IM_ID INT,
+    I_DATA TEXT,
+    ORDER_SET SET<TUPLE<INT, INT, INT, INT>>, -- optimise transaction 8
+    -- order info is stored as (w_id, d_id, o_id, c_id)
+    PRIMARY KEY ((I_ID))
+);
+
+DROP TABLE IF EXISTS OrderLine;
+CREATE TABLE OrderLine (
+    OL_W_ID INT,
+    OL_D_ID INT,
+    OL_O_ID INT,
+    OL_NUMBER INT,
+    OL_I_ID INT,
+    OL_DELIVERY_D TIMESTAMP,
+    OL_AMOUNT DECIMAL,
+    OL_SUPPLY_W_ID INT,
+    OL_QUANTITY DECIMAL,
+    OL_DIST_INFO TEXT,
+    I_NAME TEXT, -- optimise transaction 6
+    PRIMARY KEY ((OL_W_ID, OL_D_ID), OL_O_ID, OL_NUMBER)
+);
+
+DROP TABLE IF EXISTS Stock;
+CREATE TABLE Stock (
+    S_W_ID INT,
+    S_I_ID INT,
+    S_QUANTITY DECIMAL,
+    S_YTD DECIMAL,
+    S_ORDER_CNT INT,
+    S_REMOTE_CNT INT,
+    S_DIST_01 TEXT,
+    S_DIST_02 TEXT,
+    S_DIST_03 TEXT,
+    S_DIST_04 TEXT,
+    S_DIST_05 TEXT,
+    S_DIST_06 TEXT,
+    S_DIST_07 TEXT,
+    S_DIST_08 TEXT,
+    S_DIST_09 TEXT,
+    S_DIST_10 TEXT,
+    S_DATA TEXT,
+    I_PRICE DECIMAL, -- optimise transaction 1
+    I_NAME TEXT, -- optimise transaction 1
+    PRIMARY KEY ((S_W_ID, S_I_ID)), 
+);
+
+-- Creating materialized views for optimisation of read queries
+
+-- optimise transaction 7
+CREATE MATERIALIZED VIEW Customer_by_balance AS
+    SELECT C_D_ID, C_W_ID, C_ID, C_BALANCE, C_FIRST, C_MIDDLE, C_LAST, W_NAME, D_NAME
+    FROM Customer
+    WHERE C_D_ID IS NOT NULL AND C_W_ID IS NOT NULL AND C_ID IS NOT NULL AND C_BALANCE IS NOT NULL
+    PRIMARY KEY ((C_W_ID, C_D_ID), C_ID, C_BALANCE)
+    WITH CLUSTERING ORDER BY (C_ID DESC, C_BALANCE DESC);
+
+-- optimise transaction 4
+CREATE MATERIALIZED VIEW Orders_by_cid AS
+    SELECT O_W_ID, O_D_ID, O_ID, O_C_ID, O_ENTRY_D, O_CARRIER_ID
+    FROM Orders
+    WHERE O_W_ID IS NOT NULL AND O_D_ID IS NOT NULL AND O_ID IS NOT NULL AND O_C_ID IS NOT NULL
+    PRIMARY KEY ((O_W_ID, O_D_ID), O_ID, O_C_ID)
+    WITH CLUSTERING ORDER BY (O_ID DESC, O_C_ID DESC);
