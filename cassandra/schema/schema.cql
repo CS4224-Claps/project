@@ -58,6 +58,8 @@ CREATE TABLE Customer (
     C_PAYMENT_CNT INT,
     C_DELIVERY_CNT INT,
     C_DATA TEXT,
+    W_NAME TEXT,
+    D_NAME TEXT,
     PRIMARY KEY ((C_W_ID, C_D_ID), C_ID)
 );
 
@@ -74,7 +76,7 @@ CREATE TABLE Orders (
     O_ENTRY_D TIMESTAMP,
     PRIMARY KEY ((O_W_ID, O_D_ID), O_ID)
 )
-WITH CLUSTERING ORDER BY (O_ID ASC) -- optimise transaction 3;
+WITH CLUSTERING ORDER BY (O_ID ASC); -- optimise transaction 3
 
 DROP TABLE IF EXISTS Item;
 CREATE TABLE Item (
