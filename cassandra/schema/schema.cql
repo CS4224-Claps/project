@@ -58,11 +58,8 @@ CREATE TABLE Customer (
     C_PAYMENT_CNT INT,
     C_DELIVERY_CNT INT,
     C_DATA TEXT,
-<<<<<<< HEAD
     W_NAME TEXT, -- optimise transaction 7
     D_NAME TEXT, -- optimise transaction 7
-=======
->>>>>>> af0f8f5e55362b8c3963eb9689d1683954161ee3
     PRIMARY KEY ((C_W_ID, C_D_ID), C_ID)
 );
 
@@ -78,12 +75,8 @@ CREATE TABLE Orders (
     O_ALL_LOCAL DECIMAL,
     O_ENTRY_D TIMESTAMP,
     PRIMARY KEY ((O_W_ID, O_D_ID), O_ID)
-<<<<<<< HEAD
 )
 WITH CLUSTERING ORDER BY (O_ID ASC); -- optimise transaction 3
-=======
-);
->>>>>>> af0f8f5e55362b8c3963eb9689d1683954161ee3
 
 DROP TABLE IF EXISTS Item;
 CREATE TABLE Item (
@@ -139,11 +132,7 @@ CREATE TABLE Stock (
 
 -- optimise transaction 7
 CREATE MATERIALIZED VIEW Customer_by_balance AS
-<<<<<<< HEAD
     SELECT C_D_ID, C_W_ID, C_ID, C_BALANCE, C_FIRST, C_MIDDLE, C_LAST, W_NAME, D_NAME
-=======
-    SELECT C_D_ID, C_W_ID, C_ID, C_BALANCE, C_FIRST, C_MIDDLE, C_LAST
->>>>>>> af0f8f5e55362b8c3963eb9689d1683954161ee3
     FROM Customer
     WHERE C_D_ID IS NOT NULL AND C_W_ID IS NOT NULL AND C_ID IS NOT NULL AND C_BALANCE IS NOT NULL
     PRIMARY KEY ((C_W_ID, C_D_ID), C_ID, C_BALANCE)
