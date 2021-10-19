@@ -8,7 +8,7 @@ def execute(session: Session, args):
     w_id, carrier_id = map(int, args[1:])
 
     prepare_OID = session.prepare(
-        "SELECT O_ID, O_CARRIER_ID, O_C_ID FROM wholesale.Orders WHERE O_W_ID = ? AND O_D_ID = ?"
+        "SELECT O_ID, O_CARRIER_ID, O_C_ID FROM wholesale.Orders WHERE O_W_ID = ? AND O_D_ID = ? ORDER BY O_ID"
     )
 
     prepare_update_order = session.prepare(
