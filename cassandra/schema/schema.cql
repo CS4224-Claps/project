@@ -58,8 +58,8 @@ CREATE TABLE Customer (
     C_PAYMENT_CNT INT,
     C_DELIVERY_CNT INT,
     C_DATA TEXT,
-    W_NAME TEXT,
-    D_NAME TEXT,
+    W_NAME TEXT, -- optimise transaction 7
+    D_NAME TEXT, -- optimise transaction 7
     PRIMARY KEY ((C_W_ID, C_D_ID), C_ID)
 );
 

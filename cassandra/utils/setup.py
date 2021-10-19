@@ -109,7 +109,7 @@ def load_data(data_folder):
     """
     subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_WAREHOUSE.format(os.path.join(data_folder, WAREHOUSE)), encoding='utf-8')
     subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_DISTRICT.format(os.path.join(TEMP, DISTRICT)), encoding='utf-8')
-    subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_CUSTOMER.format(os.path.join(data_folder, CUSTOMER)), encoding='utf-8')
+    subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_CUSTOMER.format(os.path.join(TEMP, CUSTOMER)), encoding='utf-8')
     subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_ORDER.format(os.path.join(data_folder, ORDER)), encoding='utf-8')
     subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_ITEM.format(os.path.join(data_folder, ITEM)), encoding='utf-8')
     subprocess.run(['cqlsh', 'xcnd35'], input=LOAD_ORDERLINE.format(os.path.join(TEMP, ORDERLINE)), encoding='utf-8')
