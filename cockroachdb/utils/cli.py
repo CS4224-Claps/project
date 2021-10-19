@@ -1,14 +1,12 @@
 from argparse import ArgumentParser, FileType, RawTextHelpFormatter
+import functools
 from json import load
 from datetime import datetime
 import sys
 
 
 def get_dsn(conf):
-    if "cockroach" not in conf:
-        raise ValueError("Missing cockroach field in config.json")
-
-    config = conf["cockroach"]
+    config = _get_cockroach_config(conf)
 
     return "postgresql://{}:{}@{}:{}/{}?sslmode=require".format(
         config["username"],
@@ -17,6 +15,11 @@ def get_dsn(conf):
         config["port"],
         config["database"],
     )
+
+
+def get_max_retries(conf):
+    config = _get_cockroach_config(conf)
+    return config.get("max_retries", 3)
 
 
 def parse_cmdline():
@@ -46,9 +49,19 @@ def parse_cmdline():
     args = parser.parse_args()
 
     if args.config_file:
-        args.__dict__.update(dsn=get_dsn(load(args.config_file)))
+        config = load(args.config_file)
+        args.__dict__.update(dsn=get_dsn(config))
+        args.__dict__.update(max_retries=get_max_retries(config))
 
     return args
+
+
+def _get_cockroach_config(conf):
+    if "cockroach" not in conf:
+        raise ValueError("Missing cockroach field in config.json")
+
+    config = conf["cockroach"]
+    return config
 
 
 if __name__ == "__main__":

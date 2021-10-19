@@ -33,6 +33,12 @@ def parse_cmdline():
         type=str,
         required=True,
     )
+    parser.add_argument(
+        "-x", 
+        dest="xacts", 
+        help="flag to print xact summary stats", 
+        action='store_true'
+    )
     args = parser.parse_args()
 
     if args.config_file:

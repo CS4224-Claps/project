@@ -12,22 +12,24 @@ def get_stats(filename, xact_times):
     client_num = get_client_num(filename)
     num_xacts = len(xact_times)
     total_xact_time = np.sum(xact_times) / 1000.0
-    xact_throughput = round(num_xacts / total_xact_time, 3)
+    xact_throughput = np.round(num_xacts / total_xact_time, 3)
     avg_xact_time = np.average(xact_times)
     median_xact_time = np.median(xact_times)
     nine_five_latency = np.percentile(xact_times, 95)
     nine_nine_latency = np.percentile(xact_times, 99)
 
-    return (
-        client_num,
-        num_xacts,
-        total_xact_time,
-        xact_throughput,
-        avg_xact_time,
-        median_xact_time,
-        nine_five_latency,
-        nine_nine_latency,
-    )
+    return [
+        np.round(np.float64(stat), 3) for stat in (
+            client_num,
+            num_xacts,
+            total_xact_time,
+            xact_throughput,
+            avg_xact_time,
+            median_xact_time,
+            nine_five_latency,
+            nine_nine_latency,
+        )
+    ]
 
 
 def get_throughputs(throughput_times):
@@ -35,4 +37,4 @@ def get_throughputs(throughput_times):
     max_throughput = np.max(throughput_times)
     avg_throughput = np.average(throughput_times)
 
-    return min_throughput, max_throughput, avg_throughput
+    return [np.round(stat, 2) for stat in (min_throughput, max_throughput, avg_throughput)]
