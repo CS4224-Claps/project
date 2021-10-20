@@ -58,4 +58,11 @@ def get_cassandra_stats():
     )
 
     a = session.execute(warehouse_stats)
-    print(a)
+    print(a[0][0])
+    
+    b = session.execute(district_stats)
+    b1, b2 = b[0]
+    print(b1, b2)    
+
+
+
