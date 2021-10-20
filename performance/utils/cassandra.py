@@ -1,9 +1,7 @@
 from cassandra.cluster import PreparedStatement
 
 
-def get_cassandra_stats(): 
-    session = connect()
-
+def get_cassandra_stats(session): 
     warehouse_stmt = session.prepare(
         """
         SELECT SUM(W_YTD)
