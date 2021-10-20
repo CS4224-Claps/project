@@ -1,7 +1,7 @@
 def execute(session, input_arr, data_lines=[]):
     # Get top 10 customers
     customers = [customer for customer in session.execute(
-        "SELECT C_FIRST, C_MIDDLE, C_LAST, C_BALANCE, W_NAME, D_NAME FROM Customer_by_balance LIMIT 10")]
+        "SELECT C_FIRST, C_MIDDLE, C_LAST, C_BALANCE, W_NAME, D_NAME FROM wholesale.Customer_by_balance LIMIT 10")]
 
     # Print info
     print("Customers:")
