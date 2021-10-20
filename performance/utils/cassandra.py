@@ -42,7 +42,7 @@ def get_cassandra_stats(session):
         SELECT SUM(S_QUANTITY), SUM(S_YTD), SUM(S_ORDER_CNT), SUM(S_REMOTE_CNT)
             FROM wholesale.Stock;
         """
-    )..setReadTimeoutMillis(60000)
+    ).setReadTimeoutMillis(60000)
 
     w_ytd = session.execute(warehouse_stmt)[0]
     d_ytd, d_next_o_id = session.execute(district_stmt)[0]
