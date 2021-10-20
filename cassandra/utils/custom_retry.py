@@ -5,7 +5,7 @@ from cassandra.cluster import RetryPolicy
 class CustomRetry(RetryPolicy):
 
     def __init__(self, read_attempts: int, write_attempts: int, unavailable_attempts: int):
-        super().__init__(read_attempts, write_attempts, unavailable_attempts)
+        super()
 
     def on_read_timeout(self, query, consistency, required_responses,
                         received_responses, data_retrieved, retry_num):
