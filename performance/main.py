@@ -16,7 +16,7 @@ def main():
     if opt.xacts:
         print_summary_stats(opt.directory)
    
-    if not opts.skip:
+    if not opt.skip:
         print_client_stats(opt.directory)
         print_throughput_stats(opt.directory)
 
