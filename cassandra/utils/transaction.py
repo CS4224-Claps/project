@@ -1,10 +1,10 @@
-from xacts import delivery
+from xacts import delivery, order_status
 
 command_to_func = {
    ## "N": new_order,
    ## "P": payment,
-    "D": delivery
-   ## "O": order_status,
+    #"D": delivery,
+    "O": order_status
    ## "S": stock,
    ## "I": popular_item,
    ## "T": top_balance,
