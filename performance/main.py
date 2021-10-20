@@ -13,7 +13,7 @@ from utils.cassandra import get_cassandra_stats
 def main():
     opt = parse_cmdline()
 
-    get_cassandra_stats
+    get_cassandra_stats()
 
     """
     if opt.xacts:
