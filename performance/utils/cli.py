@@ -47,12 +47,28 @@ def parse_cmdline():
         required=True,
     )
     parser.add_argument(
+        "-m",
+        dest="mode",
+        help="mode to get cassandra or cockroach stats",
+        type=str,
+        default="cockroach"
+    )
+    parser.add_argument(
+        "-s",
+        dest="skip", 
+        help="flag to skip printing client and xact stats", 
+        action='store_true'
+    )
+    parser.add_argument(
         "-x", 
         dest="xacts", 
         help="flag to print xact summary stats", 
         action='store_true'
     )
     args = parser.parse_args()
+
+    if args.mode not in ["cassandra", "cockroach"]:
+        raise Exception("Unknown mode. Please supply mode as cassandra or cockroach")
 
     if args.config_file:
         args.__dict__.update(cockroach_dsn=get_cockroach_dsn(load(args.config_file)))

@@ -16,9 +16,14 @@ def main():
     if opt.xacts:
         print_summary_stats(opt.directory)
    
-    print_client_stats(opt.directory)
-    print_throughput_stats(opt.directory)
-    print_cockroach_stats(opt.directory, opt.cockroach_dsn)
+    if not opts.skip:
+        print_client_stats(opt.directory)
+        print_throughput_stats(opt.directory)
+
+    if opt.mode == "cockroach":
+        print_cockroach_stats(opt.directory, opt.cockroach_dsn)
+    else: 
+        print_cassandra_stats(opt.directory, opt.cass_sess)
 
 
 if __name__ == "__main__":
