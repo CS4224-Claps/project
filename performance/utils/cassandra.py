@@ -57,5 +57,5 @@ def get_cassandra_stats():
         """
     )
 
-    a = warehouse_stats()
+    a = session.execute(warehouse_stats)
     print(a)
