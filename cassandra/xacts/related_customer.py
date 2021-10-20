@@ -20,7 +20,6 @@ def execute(session, input_arr, data_lines=[]):
     prepare_orderline = session.prepare(
         "SELECT * FROM Orderline_by_iid WHERE OL_I_ID IN ?")
     for order_itemset in order_itemsets:
-        print(order_itemset)
         seen_order_identifiers = set()
         rows = session.execute(prepare_orderline.bind((order_itemset,)))
         for row in rows:
