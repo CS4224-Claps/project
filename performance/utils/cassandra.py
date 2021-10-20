@@ -1,3 +1,6 @@
+from cassandra import ConsistencyLevel
+from cassandra.cluster import ExecutionProfile, Cluster
+from cassandra.policies import RoundRobinPolicy
 from cassandra.cluster import PreparedStatement, BoundStatement
 
 
