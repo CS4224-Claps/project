@@ -24,7 +24,7 @@ def get_cockroach_dsn(conf):
 def get_cassandra_session():
     contact_points = ['192.168.48.255', '192.168.51.0', '192.168.51.2', '192.168.51.1', '192.168.48.254']
     cluster_profile = ExecutionProfile(load_balancing_policy=RoundRobinPolicy(), consistency_level=ConsistencyLevel.QUORUM)
-    cluster = Cluster(contact_points, execution_profiles={"profile": cluster_profile})
+    cluster = Cluster(contact_points, execution_profiles={"profile": cluster_profile}, request_timeout=60000)
     session = cluster.connect()
 
     return session
