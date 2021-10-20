@@ -1,68 +1,64 @@
-from cassandra import ConsistencyLevel
-from cassandra.cluster import ExecutionProfile, Cluster
-from cassandra.policies import RoundRobinPolicy
-from cassandra.cluster import PreparedStatement, BoundStatement
-
-
-def connect():
-    contact_points = ['192.168.48.255', '192.168.51.0', '192.168.51.2', '192.168.51.1', '192.168.48.254']
-    cluster_profile = ExecutionProfile(load_balancing_policy=RoundRobinPolicy(), consistency_level=ConsistencyLevel.QUORUM)
-    cluster = Cluster(contact_points, execution_profiles={"profile": cluster_profile})
-    session = cluster.connect()
-    return session
+from cassandra.cluster import PreparedStatement
 
 
 def get_cassandra_stats(): 
     session = connect()
 
-    warehouse_stats = session.prepare(
+    warehouse_stmt = session.prepare(
         """
         SELECT SUM(W_YTD)
             FROM wholesale.Warehouse;
         """
     )
 
-    district_stats = session.prepare(
+    district_stmt = session.prepare(
         """
         SELECT SUM(D_YTD), SUM(D_NEXT_O_ID)
             FROM wholesale.District; 
         """
     )
 
-    customer_stats = session.prepare(
+    customer_stmt = session.prepare(
         """
         SELECT SUM(C_BALANCE), SUM(C_YTD_PAYMENT), SUM(C_PAYMENT_CNT), SUM(C_DELIVERY_CNT)
             FROM wholesale.Customer;
         """
     )
 
-    order_stats = session.prepare(
+    order_stmt = session.prepare(
         """
         SELECT MAX(O_ID), MAX(O_OL_CNT)
             FROM wholesale.Orders;
         """
     )
 
-    orderline_stats = session.prepare(
+    orderline_stmt = session.prepare(
         """
         SELECT SUM(OL_AMOUNT), SUM(OL_QUANTITY)
             FROM wholesale.OrderLine;
         """
     )
 
-    stock_stats = session.prepare(
+    stock_stmt = session.prepare(
         """
         SELECT SUM(S_QUANTITY), SUM(S_YTD), SUM(S_ORDER_CNT), SUM(S_REMOTE_CNT)
             FROM wholesale.Stock;
         """
     )
 
-    a = session.execute(warehouse_stats)
-    print(a[0][0])
-    
-    b = session.execute(district_stats)
-    b1, b2 = b[0]
-    print(b1, b2)    
+    w_ytd = session.execute(warehouse_stmt)[0]
+    d_ytd, d_next_o_id = session.execute(district_stmt)[0]
+    c_balance, c_ytd_payment, c_payment_cnt, c_delivery_cnt = session.execute(customer_stmt)[0]
+    o_id, o_ol_cnt = session.execute(order_stmt)[0]
+    ol_amount, ol_quantity = session.execute(orderline_stmt)[0]
+    s_quantity, s_ytd, s_order_cnt, s_remote_cnt = session.execute(stock_stmt)[0]
 
+    final_state = [
+        w_ytd, d_ytd, d_next_o_id, c_balance, c_ytd_payment, c_payment_cnt, c_delivery_cnt, 
+        o_id, o_ol_cnt, ol_amount, ol_quantity, s_quantity, s_ytd, s_order_cnt, s_remote_cnt
+    ]
 
+    if len(final_state) != 15:
+        raise ValueError("Final statistics missing values")
 
+    return final_state

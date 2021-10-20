@@ -1,3 +1,7 @@
+from cassandra import ConsistencyLevel
+from cassandra.cluster import ExecutionProfile, Cluster
+from cassandra.policies import RoundRobinPolicy
+
 from argparse import ArgumentParser, FileType, RawTextHelpFormatter
 from json import load
 
@@ -15,6 +19,15 @@ def get_cockroach_dsn(conf):
         config["port"],
         config["database"],
     )
+
+
+def get_cassandra_session():
+    contact_points = ['192.168.48.255', '192.168.51.0', '192.168.51.2', '192.168.51.1', '192.168.48.254']
+    cluster_profile = ExecutionProfile(load_balancing_policy=RoundRobinPolicy(), consistency_level=ConsistencyLevel.QUORUM)
+    cluster = Cluster(contact_points, execution_profiles={"profile": cluster_profile})
+    session = cluster.connect()
+
+    return session
 
 
 def parse_cmdline():
@@ -43,6 +56,8 @@ def parse_cmdline():
 
     if args.config_file:
         args.__dict__.update(cockroach_dsn=get_cockroach_dsn(load(args.config_file)))
+
+    args.__dict__.update(cass_sess=get_cassandra_session())
 
     return args
 

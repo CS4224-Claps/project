@@ -13,16 +13,12 @@ from utils.cassandra import get_cassandra_stats
 def main():
     opt = parse_cmdline()
 
-    get_cassandra_stats()
-
-    """
     if opt.xacts:
         print_summary_stats(opt.directory)
    
     print_client_stats(opt.directory)
     print_throughput_stats(opt.directory)
     print_cockroach_stats(opt.directory, opt.cockroach_dsn)
-    """
 
 
 if __name__ == "__main__":
