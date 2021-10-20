@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 def execute(session, input_arr, data_lines=[]):
     c_w_id, c_d_id, c_id = map(int, input_arr[1:])
 
@@ -17,22 +15,34 @@ def execute(session, input_arr, data_lines=[]):
         rows = session.execute(prepare_orderline.bind((c_w_id, c_d_id, o_id)))
         order_itemsets.append({orderline.ol_i_id for orderline in rows})
 
-    # Get orderlines
-    order_itemmap = defaultdict(set)
-    rows = session.execute("SELECT OL_W_ID, OL_D_ID, OL_O_ID, OL_I_ID FROM Orderline ALLOW FILTERING")
-    for row in rows:
-        order_itemmap[(row.ol_w_id, row.ol_d_id, row.ol_o_id)].add(row.ol_i_id)
-
     # For each of customer's orders, find all orders from different warehouse with >=2 common items
-    related_customers = set()
+    related_orders = set()
+    prepare_orderline = session.prepare(
+        "SELECT * FROM Orderline_by_iid WHERE OL_I_ID IN ?")
     for order_itemset in order_itemsets:
-        for order_identifier, other_order_itemset in order_itemmap.items():
-            if order_identifier[0] == c_w_id:
+        print(order_itemset)
+        seen_order_identifiers = set()
+        rows = session.execute(prepare_orderline.bind((order_itemset,)))
+        for row in rows:
+            # Related customer must be from different warehouse
+            if row.ol_w_id == c_w_id:
                 continue
-            if len(order_itemset.intersection(other_order_itemset)) >= 2:
-                related_customers.add(order_identifier)
+            # order_identifier is (w_id, d_id, o_id)
+            order_identifier = (row.ol_w_id, row.ol_d_id, row.ol_o_id)
+            if order_identifier in seen_order_identifiers:
+                # This is the second time we see the same order identifier - it is a related customer
+                related_orders.add(order_identifier)
+            seen_order_identifiers.add(order_identifier)
 
     # Retrieve c_id for these related customers' orders
+    prepare_orders = session.prepare(
+        "SELECT O_C_ID FROM Orders WHERE O_W_ID = ? AND O_D_ID = ? AND O_ID = ?")
+    related_customers = []
+    for w_id, d_id, o_id in related_orders:
+        rows = session.execute(prepare_orders.bind((w_id, d_id, o_id)))
+        related_c_id = rows[0].o_c_id
+        related_customers.append((w_id, d_id, related_c_id))
+
     print("1. Customer: ", c_w_id, c_d_id, c_id)
     print("2. Related customers: ")
     for customer in related_customers:
