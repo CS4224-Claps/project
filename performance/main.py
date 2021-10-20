@@ -2,6 +2,7 @@ import psycopg2
 
 from utils.cli import parse_cmdline
 from utils.output import (
+    print_cassandra_stats, 
     print_client_stats,
     print_throughput_stats,
     print_cockroach_stats,
