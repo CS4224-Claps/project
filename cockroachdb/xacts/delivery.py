@@ -10,9 +10,8 @@ def execute(conn, io_line):
     w_id, carrier_id = map(int, io_line[1:])
 
     # (1) For d_id in [1, 10]:
-    for d_id in range(1, 11):
-        with conn.cursor() as cur:
-            cur.execute("SET TRANSACTION PRIORITY HIGH;")
+    with conn.cursor() as cur:
+        for d_id in range(1, 11):
             # (1a) Get smallest O_ID with (W_ID, D_ID) with O_CARRIER_ID IS NULL
             # (1b) Update Order by setting O_CARRIER_ID to CARRIER_ID
             sql = """
