@@ -5,12 +5,16 @@ from utils.output import (
     print_client_stats,
     print_throughput_stats,
     print_cockroach_stats,
+    print_summary_stats, 
 )
 
 
 def main():
     opt = parse_cmdline()
 
+    if opt.xacts:
+        print_summary_stats(opt.directory)
+   
     print_client_stats(opt.directory)
     print_throughput_stats(opt.directory)
     print_cockroach_stats(opt.directory, opt.cockroach_dsn)

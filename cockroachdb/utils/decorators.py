@@ -1,6 +1,6 @@
 import functools
 import logging
-import time 
+import time
 
 
 def validate_command(command):
@@ -34,14 +34,16 @@ def log_command(func):
             return
 
         command_letter = args[1][0]
-        before = time.time() 
+        logging.debug(f"\n -------> {','.join(args[1])}")
+
+        before = time.time()
         command = func(*args, **kwargs)
         after = time.time()
-        time_taken = int((after - before) * 1000)
+        time_taken = round((after - before) * 1000, 2)
 
-        # In CSV Format 
+        # In CSV Format
         logging.info(f"{command_letter},{time_taken}")
 
-        return command 
+        return command
 
     return wrapper
