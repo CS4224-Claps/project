@@ -1,5 +1,5 @@
-def execute(session, input_arr, data_lines=[]):
-    c_w_id, c_d_id, c_id = map(int, input_arr[1:])
+def execute(session, args):
+    c_w_id, c_d_id, c_id = map(int, args[1:])
 
     # Get o_ids of all the customer's orders
     prepare_orders = session.prepare(

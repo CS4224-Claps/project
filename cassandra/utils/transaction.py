@@ -1,4 +1,4 @@
-from xacts import delivery, popular_item, top_balance
+from xacts import delivery, popular_item, related_customer, top_balance
 
 command_to_func = {
    ## "N": new_order,
@@ -8,7 +8,7 @@ command_to_func = {
    ## "S": stock,
     "I": popular_item,
     "T": top_balance,
-   ## "R": related_customer
+    "R": related_customer
 }
 
 
