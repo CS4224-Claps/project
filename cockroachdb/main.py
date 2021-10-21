@@ -57,7 +57,7 @@ def main():
     retry_file = f"{opt.outdir}/retry_{Path(opt.infile.name).stem}.txt"
 
     # do the original transaction from seed file
-    with opt.infile as f, open(retry_file, "a") as rf:
+    with opt.infile as f, open(retry_file, "a", buffering=1) as rf:
         while True:
             xact = next_xact(f.readline(), f)
             if not xact:
@@ -67,7 +67,7 @@ def main():
 
     # do retries if there is any
     rf1 = open(retry_file, "r")
-    rf2 = open(retry_file, "a")
+    rf2 = open(retry_file, "a", buffering=1)
     cur_start, cur_end = 0, rf2.tell()
 
     with rf1, rf2:
