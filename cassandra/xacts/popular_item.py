@@ -1,5 +1,5 @@
-def execute(session, input_arr, data_lines=[]):
-    w_id, d_id, num_orders = map(int, input_arr[1:])
+def execute(session, args):
+    w_id, d_id, num_orders = map(int, args[1:])
 
     # Get D_NEXT_O_ID
     prepare_district = session.prepare(
