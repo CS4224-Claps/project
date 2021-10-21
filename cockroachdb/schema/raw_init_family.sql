@@ -66,17 +66,17 @@ CREATE TABLE IF NOT EXISTS Customer (
 );
 
 CREATE TABLE IF NOT EXISTS Orders (
-    id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid() , -- spread orders more evenly
-    O_W_ID INTEGER NOT NULL,
-    O_D_ID INTEGER NOT NULL,
-    O_ID INTEGER NOT NULL,
+    O_W_ID INTEGER,
+    O_D_ID INTEGER,
+    O_ID INTEGER,
     O_C_ID INTEGER,
     O_CARRIER_ID INTEGER,
     O_OL_CNT DECIMAL(2, 0),
     O_ALL_LOCAL DECIMAL(1, 0), -- True or False
     O_ENTRY_D TIMESTAMP,
-    UNIQUE (O_W_ID, O_D_ID, O_ID ASC),
-    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer(C_W_ID, C_D_ID, C_ID)
+    PRIMARY KEY (O_W_ID, O_D_ID, O_ID ASC),
+    FOREIGN KEY (O_W_ID, O_D_ID, O_C_ID) REFERENCES Customer(C_W_ID, C_D_ID, C_ID),
+    CONSTRAINT valid_carrier CHECK (O_CARRIER_ID >= 1 AND O_CARRIER_ID <= 10)
 );
 
 CREATE TABLE IF NOT EXISTS Item (
@@ -128,6 +128,12 @@ CREATE TABLE IF NOT EXISTS Stock (
     FAMILY f2 (S_DIST_01, S_DIST_02, S_DIST_03, S_DIST_04, S_DIST_05, S_DIST_06, S_DIST_07, S_DIST_08, S_DIST_09, S_DIST_10, S_DATA)
 );
 
+-- split the data by w_id for more even data distribution
+ALTER TABLE Customer SPLIT AT VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10);
+ALTER TABLE Orders SPLIT AT VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10);
+ALTER TABLE Orderline SPLIT AT VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10);
+ALTER TABLE Stock SPLIT AT VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10);
+
 -- run `cd seed/ && python3 -m http.server 3000` in xcnd36
 
 IMPORT INTO Warehouse CSV DATA ('http://xcnd36:3000/data_files/warehouse.csv') WITH nullif = 'null';
@@ -145,13 +151,5 @@ ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_i_id_ref_item;
 ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_w_id_ref_orders;
 ALTER TABLE Stock VALIDATE CONSTRAINT fk_s_i_id_ref_item;
 ALTER TABLE Stock VALIDATE CONSTRAINT fk_s_w_id_ref_warehouse;
-
-CREATE TABLE IF NOT EXISTS Carrier (
-    id PRIMARY KEY,
-    O_CARRIER_ID
-) AS
-SELECT id, O_CARRIER_ID FROM Orders;
-ALTER TABLE Carrier ADD CONSTRAINT valid_carrier CHECK (O_CARRIER_ID >= 1 AND O_CARRIER_ID <= 10);
-ALTER TABLE Orders DROP COLUMN O_CARRIER_ID;
 
 CREATE INDEX balance on Customer (C_BALANCE DESC);

@@ -22,7 +22,7 @@ def execute(conn, io_line):
 
         get_last_order = """
             SELECT O_ID, O_ENTRY_D, O_CARRIER_ID
-            FROM Orders NATURAL JOIN Carrier
+            FROM Orders
             WHERE O_W_ID = (%s) AND O_D_ID = (%s) AND O_C_ID = (%s)
             ORDER BY O_ENTRY_D DESC
             LIMIT 1

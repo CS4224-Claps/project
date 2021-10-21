@@ -16,14 +16,15 @@ def execute(conn, io_line):
             # (1a) Get smallest O_ID with (W_ID, D_ID) with O_CARRIER_ID IS NULL
             # (1b) Update Order by setting O_CARRIER_ID to CARRIER_ID
             sql = """
-                SELECT id, O_ID, O_C_ID
-                    FROM Orders NATURAL JOIN Carrier
+                UPDATE Orders
+                    SET O_CARRIER_ID = %s
                     WHERE O_W_ID = %s AND O_D_ID = %s AND O_CARRIER_ID IS NULL
                     ORDER BY O_ID ASC
-                    LIMIT 1;
+                    LIMIT 1
+                    RETURNING O_ID, O_C_ID;
             """
 
-            cur.execute(sql, (w_id, d_id))
+            cur.execute(sql, (carrier_id, w_id, d_id))
             row = cur.fetchone()
 
             if row is None:
@@ -31,17 +32,9 @@ def execute(conn, io_line):
                     f"no pending deliveries for w_id={w_id}, d_id={d_id}! skipping..."
                 )
                 continue
-            uuid, o_id, c_id = row
+            o_id, c_id = row
 
             logging.debug("delivery: modifying %s %s", o_id, c_id)
-
-            sql = """
-                UPDATE Carrier
-                    SET O_CARRIER_ID = %s
-                    WHERE id = %s;
-            """
-
-            cur.execute(sql, (carrier_id, uuid))
 
             # (1c) Update all the order lines by setting OL_DELIVERY_D to now.
             # ol_delivery_d = str(datetime.now(timezone.utc))

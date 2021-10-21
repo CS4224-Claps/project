@@ -36,22 +36,12 @@ def execute(conn, io_line, data_lines=[]):
 
         sql = """
             INSERT INTO Orders
-                (O_W_ID, O_D_ID, O_ID, O_C_ID,
+                (O_W_ID, O_D_ID, O_ID, O_C_ID, O_CARRIER_ID,
                 O_OL_CNT, O_ALL_LOCAL, O_ENTRY_D)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-                RETURNING id; 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
         cur.execute(
-            sql, (w_id, d_id, o_id, c_id, num_items, o_all_local, o_entry_d)
-        )
-
-        uuid, = cur.fetchone() 
-
-        sql = """
-            INSERT INTO Carrier VALUES (%s, %s);
-        """
-        cur.execute(
-            sql, (uuid, None)
+            sql, (w_id, d_id, o_id, c_id, None, num_items, o_all_local, o_entry_d)
         )
 
         # (4) Initialize TOTAL_AMOUNT = 0
