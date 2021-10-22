@@ -8,6 +8,8 @@ def execute(conn, io_line):
     w_id, d_id, c_id = map(int, io_line[1:])
 
     with conn.cursor() as cur:
+        cur.execute("SET TRANSACTION AS OF SYSTEM TIME '-30s'")
+
         get_related_customers = """
             SELECT o2.O_W_ID, o2.O_D_ID, o2.O_C_ID
             FROM Orders o1, Orders o2
