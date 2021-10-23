@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS District (
     D_YTD DECIMAL(12, 2),
     D_NEXT_O_ID INTEGER,
     PRIMARY KEY (D_W_ID, D_ID),
-    FOREIGN KEY (D_ID) REFERENCES Warehouse(W_ID)
-    -- FAMILY f1 (D_W_ID, D_ID, D_YTD, D_NEXT_O_ID),
-    -- FAMILY f2 (D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, D_TAX)
+    FOREIGN KEY (D_ID) REFERENCES Warehouse(W_ID),
+    FAMILY f1 (D_W_ID, D_ID, D_NEXT_O_ID, D_TAX),
+    FAMILY f2 (D_YTD, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP)
 );
 
 CREATE TABLE IF NOT EXISTS Customer (
@@ -163,12 +163,14 @@ IMPORT INTO Item CSV DATA ('http://xcnd36:3000/data_files/item.csv') WITH nullif
 IMPORT INTO OrderLine CSV DATA ('http://xcnd36:3000/data_files/order-line.csv') WITH nullif = 'null';
 IMPORT INTO Stock CSV DATA ('http://xcnd36:3000/data_files/stock.csv') WITH nullif = 'null';
 
-ALTER TABLE District VALIDATE CONSTRAINT fk_d_id_ref_warehouse;
-ALTER TABLE Customer VALIDATE CONSTRAINT fk_c_w_id_ref_district;
-ALTER TABLE Orders VALIDATE CONSTRAINT fk_o_w_id_ref_customer;
-ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_i_id_ref_item;
-ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_w_id_ref_orders;
-ALTER TABLE Stock VALIDATE CONSTRAINT fk_s_i_id_ref_item;
-ALTER TABLE Stock VALIDATE CONSTRAINT fk_s_w_id_ref_warehouse;
+-- ALTER TABLE District VALIDATE CONSTRAINT fk_d_id_ref_warehouse;
+-- ALTER TABLE Customer VALIDATE CONSTRAINT fk_c_w_id_ref_district;
+-- ALTER TABLE Orders VALIDATE CONSTRAINT fk_o_w_id_ref_customer;
+-- ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_i_id_ref_item;
+-- ALTER TABLE OrderLine VALIDATE CONSTRAINT fk_ol_w_id_ref_orders;
+-- ALTER TABLE Stock VALIDATE CONSTRAINT fk_s_i_id_ref_item;
+-- ALTER TABLE Stock VALIDATE CONSTRAINT fk_s_w_id_ref_warehouse;
 
-CREATE INDEX balance on Customer (C_BALANCE DESC);
+CREATE INDEX balance on Customer (C_BALANCE DESC); --top balance tx
+-- delivery tx
+CREATE INDEX oldest_undelivered on Orders (O_W_ID, O_D_ID, O_ID ASC) storing (O_C_ID) where O_CARRIER_ID is NULL;
