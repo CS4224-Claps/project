@@ -33,6 +33,7 @@ def get_cassandra_session():
         row_factory=tuple_factory)
     cluster = Cluster(contact_points, execution_profiles={"profile": cluster_profile})
     session = cluster.connect()
+    session.default_timeout = 1000
 
     return session
 

@@ -8,7 +8,6 @@ from utils.output import (
     print_cockroach_stats,
     print_summary_stats, 
 )
-from utils.cassandra import get_cassandra_stats
 
 
 def main():
