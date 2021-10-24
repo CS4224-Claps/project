@@ -36,10 +36,9 @@ def execute(session: Session, args):
 
     result = session.execute_async(prepare_order_line.bind((w_id, d_id, o_id)), trace=True)
     items = result.result()
-    tracing = result.get_query_trace()
+    tracing = result.get_execution_info()
 
-    for e in tracing.events:
-        logging.debug(e)
+    print(tracing)
 
     for item in items:
         print(item.ol_i_id, item.ol_supply_w_id,
