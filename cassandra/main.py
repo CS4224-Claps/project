@@ -5,6 +5,9 @@ from utils.logging import init_logger
 from utils.transaction import run_xact
 
 
+import logging
+
+
 def main():
     cli_args = parse_cli()
     logging.basicConfig(level=logging.DEBUG if cli_args.verbose else logging.INFO)
