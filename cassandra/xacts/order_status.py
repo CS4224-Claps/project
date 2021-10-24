@@ -38,7 +38,7 @@ def execute(session: Session, args):
     items = result.result()
     tracing = result.get_query_trace()
 
-    logging.debug(e.parameters, e.duration)
+    logging.debug(tracing.parameters, tracing.duration)
 
     for item in items:
         print(item.ol_i_id, item.ol_supply_w_id,
