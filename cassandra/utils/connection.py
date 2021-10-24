@@ -1,7 +1,6 @@
 from cassandra import ConsistencyLevel
 from cassandra.cluster import ExecutionProfile, Cluster, EXEC_PROFILE_DEFAULT, RetryPolicy
 from cassandra.policies import RoundRobinPolicy, DowngradingConsistencyRetryPolicy
-from cassandra.query import tuple_factory
 from utils.custom_retry import CustomRetry
 
 
@@ -12,8 +11,7 @@ def connection():
         retry_policy=CustomRetry(5,2,2),
         consistency_level=ConsistencyLevel.LOCAL_QUORUM,
         serial_consistency_level=ConsistencyLevel.LOCAL_SERIAL,
-        request_timeout=10000,
-        row_factory=tuple_factory)
+        request_timeout=10000)
     cluster = Cluster(contact_points, execution_profiles={EXEC_PROFILE_DEFAULT: cluster_profile})
     session = cluster.connect()
 
