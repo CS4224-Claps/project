@@ -1,3 +1,7 @@
+from utils.decorators import log_command
+
+
+@log_command
 def execute(session, input_arr):
     _, w_id, d_id, c_id, pay_amt = input_arr
     w_id, d_id, c_id, pay_amt = int(w_id), int(

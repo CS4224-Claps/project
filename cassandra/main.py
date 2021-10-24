@@ -1,11 +1,20 @@
 from utils.parser import parse_xact
 from utils.cli import parse_cli
 from utils.connection import connection
+from utils.logging import init_logger
 from utils.transaction import run_xact
+
+
+import logging
 
 
 def main():
     cli_args = parse_cli()
+    logging.basicConfig(level=logging.DEBUG if cli_args.verbose else logging.INFO)
+    logging.debug(f"cli option: {cli_args}")
+
+    init_logger(cli_args.infile, cli_args.outdir)
+
     ff = cli_args.infile
     session = connection()
 

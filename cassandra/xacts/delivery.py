@@ -1,9 +1,9 @@
 from datetime import datetime
 from cassandra.cluster import PreparedStatement, BoundStatement, Session
-import time
+from utils.decorators import log_command
 
-total_time = 0
 
+@log_command
 def execute(session: Session, args):
     w_id, carrier_id = map(int, args[1:])
 
@@ -34,7 +34,6 @@ def execute(session: Session, args):
 
     try:
         print("new transaction")
-        start = time.process_time()
         #session.add_request_init_listener()
         for district in range(1, 11):
             # Get smallest OID with no carrier and Customer
@@ -61,11 +60,7 @@ def execute(session: Session, args):
 
             # finally update customerrrrrr
             session.execute(prepare_update_customer.bind((c_balance, c_delivery,w_id, district, c_id)), trace=True)
-        diff = time.process_time() - start
-        print(diff)
-        global total_time
-        total_time = total_time + diff
-        print(total_time)
+
     except TimeoutError as e:
         print("add try again")
 

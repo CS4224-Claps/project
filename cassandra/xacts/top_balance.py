@@ -1,3 +1,7 @@
+from utils.decorators import log_command
+
+
+@log_command
 def execute(session, args):
     # Get top 10 customers
     customers = [customer for customer in session.execute(

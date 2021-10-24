@@ -1,3 +1,7 @@
+from utils.decorators import log_command
+
+
+@log_command
 def execute(session, input_arr):
     w_id, d_id, t, l = map(int, input_arr[1:])
 
