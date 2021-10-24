@@ -1,3 +1,9 @@
+from cassandra import ConsistencyLevel
+from cassandra.cluster import ExecutionProfile, Cluster
+from cassandra.policies import RoundRobinPolicy, DowngradingConsistencyRetryPolicy
+from cassandra.query import tuple_factory
+
+
 from argparse import ArgumentParser, FileType, RawTextHelpFormatter
 from json import load
 
@@ -17,6 +23,20 @@ def get_cockroach_dsn(conf):
     )
 
 
+def get_cassandra_session():
+    contact_points = ['192.168.48.255', '192.168.51.0', '192.168.51.2', '192.168.51.1', '192.168.48.254']
+    cluster_profile = ExecutionProfile(load_balancing_policy=RoundRobinPolicy(), 
+        retry_policy=DowngradingConsistencyRetryPolicy(),
+        consistency_level=ConsistencyLevel.LOCAL_QUORUM,
+        serial_consistency_level=ConsistencyLevel.LOCAL_SERIAL,
+        request_timeout=10000,
+        row_factory=tuple_factory)
+    cluster = Cluster(contact_points, execution_profiles={"profile": cluster_profile})
+    session = cluster.connect()
+
+    return session
+
+
 def parse_cmdline():
     parser = ArgumentParser(description=__doc__, formatter_class=RawTextHelpFormatter)
     parser.add_argument(
@@ -34,6 +54,19 @@ def parse_cmdline():
         required=True,
     )
     parser.add_argument(
+        "-m",
+        dest="mode",
+        help="mode to get cassandra or cockroach stats",
+        type=str,
+        default="cockroach"
+    )
+    parser.add_argument(
+        "-s",
+        dest="skip", 
+        help="flag to skip printing client and xact stats", 
+        action='store_true'
+    )
+    parser.add_argument(
         "-x", 
         dest="xacts", 
         help="flag to print xact summary stats", 
@@ -41,8 +74,13 @@ def parse_cmdline():
     )
     args = parser.parse_args()
 
+    if args.mode not in ["cassandra", "cockroach"]:
+        raise Exception("Unknown mode. Please supply mode as cassandra or cockroach")
+
     if args.config_file:
         args.__dict__.update(cockroach_dsn=get_cockroach_dsn(load(args.config_file)))
+
+    args.__dict__.update(cass_sess=get_cassandra_session())
 
     return args
 
