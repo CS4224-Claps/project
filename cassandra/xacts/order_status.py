@@ -33,7 +33,12 @@ def execute(session: Session, args):
         "SELECT OL_I_ID, OL_SUPPLY_W_ID, OL_QUANTITY, OL_AMOUNT, OL_DELIVERY_D FROM wholesale.Orderline "
         "WHERE OL_W_ID = ? AND OL_D_ID = ? AND OL_O_ID = ?")
 
-    items = session.execute(prepare_order_line.bind((w_id, d_id, o_id)));
+    result = session.execute(prepare_order_line.bind((w_id, d_id, o_id)), trace=True)
+    items = result.result()
+    tracing = result.get_query_trace()
+
+    for e in tracing.events:
+        logging.debug(e)
 
     for item in items:
         print(item.ol_i_id, item.ol_supply_w_id,
