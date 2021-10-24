@@ -1,5 +1,6 @@
 from cassandra.cluster import Session
 from utils.decorators import log_command
+import logging
 
 
 @log_command
