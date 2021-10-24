@@ -44,7 +44,7 @@ def get_cassandra_stats(session):
         """
     )
 
-    w_ytd, = session.execute(warehouse_stmt)[0]
+    w_ytd = session.execute(warehouse_stmt)[0][0]
     d_ytd, d_next_o_id = session.execute(district_stmt)[0]
     c_balance, c_ytd_payment, c_payment_cnt, c_delivery_cnt = session.execute(customer_stmt)[0]
     o_id, o_ol_cnt = session.execute(order_stmt)[0]
