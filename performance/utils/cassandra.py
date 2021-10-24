@@ -56,4 +56,6 @@ def get_cassandra_stats(session):
         o_id, o_ol_cnt, ol_amount, ol_quantity, s_quantity, s_ytd, s_order_cnt, s_remote_cnt
     ]
 
+    print(final_state)
+
     return final_state
