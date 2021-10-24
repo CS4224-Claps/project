@@ -8,15 +8,11 @@ def execute(session: Session, args):
     w_id, carrier_id = map(int, args[1:])
 
     prepare_OID = session.prepare(
-        "SELECT O_ID, O_CARRIER_ID, O_C_ID FROM wholesale.Orders WHERE O_W_ID = ? AND O_D_ID = ? ORDER BY O_ID"
+        "SELECT O_ID, O_CARRIER_ID, O_C_ID FROM wholesale.Orders WHERE O_W_ID = ? AND O_D_ID = ? ORDER BY O_ID ASC"
     )
 
     prepare_update_order = session.prepare(
         "UPDATE wholesale.Orders SET O_CARRIER_ID = ? WHERE O_W_ID = ? AND O_D_ID = ? AND O_ID = ?"
-    )
-    
-    prepare_ol_num = session.prepare(
-        "SELECT OL_NUMBER, OL_AMOUNT FROM wholesale.Orderline WHERE OL_W_ID = ? AND OL_D_ID = ? AND OL_O_ID = ?"
     )
 
     prepare_orderline_data = session.prepare(
@@ -44,14 +40,13 @@ def execute(session: Session, args):
             # Get smallest OID with no carrier and Customer
             oid_rows = session.execute(prepare_OID.bind((w_id, district)), trace=True)
             oid,  c_id = get_smallest_oid(oid_rows)
-    
+
             # update carrier
             session.execute(prepare_update_order.bind((carrier_id, w_id, district, oid)), trace=True)
 
             # prepare order line data
             ol_rows = session.execute(prepare_orderline_data.bind((w_id, district, oid)), trace=True)
             c_balance_add = get_ol_amt(ol_rows)
-            c_delivery_add = 1
 
             # update all order lines
             date_time = datetime.now()
