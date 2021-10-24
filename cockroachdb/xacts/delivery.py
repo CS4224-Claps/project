@@ -27,8 +27,9 @@ def execute(conn, io_line):
         )
         updated_orders = cur.fetchall()
 
-        if updated_orders is None:
+        if updated_orders is None or len(updated_orders) == 0:
             logging.debug(f"no pending deliveries for w_id={w_id}! skipping ...")
+            return
 
         logging.debug(f"modifying {updated_orders}...")
 
