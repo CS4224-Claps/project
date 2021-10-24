@@ -1,3 +1,7 @@
+import functools
+import logging
+import time
+
 def log_command(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
