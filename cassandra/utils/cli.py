@@ -10,8 +10,8 @@ def parse_cli():
                             type=argparse.FileType('r'),
                             nargs="?",
                             help='transaction file to run')
-    parser.add_argument("-v", "--verbose", action="store_true", help="print debug info")
-    parser.add_argument(
+    cli_parser.add_argument("-v", "--verbose", action="store_true", help="print debug info")
+    cli_parser.add_argument(
         "-o",
         dest="outdir",
         help="output directory for logs",
