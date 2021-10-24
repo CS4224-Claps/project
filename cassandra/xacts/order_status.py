@@ -1,9 +1,7 @@
 from cassandra.cluster import Session
-import time
-total_time_order = 0
+
 
 def execute(session: Session, args):
-    start = time.process_time()
     w_id, d_id, c_id =  map(int, args[1:])
 
     # get customer data
@@ -38,11 +36,6 @@ def execute(session: Session, args):
     for item in items:
         print(item.ol_i_id, item.ol_supply_w_id,
               item.ol_quantity, item.ol_amount, item.ol_delivery_d)
-    diff = time.process_time() - start
-    print(diff)
-    global total_time_order
-    total_time_order+=diff
-    print(total_time_order)
     return
 
 def get_order_data(orders):
