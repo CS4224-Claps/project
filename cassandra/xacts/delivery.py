@@ -1,7 +1,9 @@
 from datetime import datetime
 from cassandra.cluster import PreparedStatement, BoundStatement, Session
+from utils.decorators import log_command
 
 
+@log_command
 def execute(session: Session, args):
     w_id, carrier_id = map(int, args[1:])
 

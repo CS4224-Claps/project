@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
+from utils.decorators import log_command
 
 
+@log_command
 def execute(session, input_arr, data_lines=[]):
     c_id, w_id, d_id, num_items = map(int, input_arr[1:])
 
