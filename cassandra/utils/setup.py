@@ -3,6 +3,8 @@ import os
 import shutil
 import subprocess
 
+from collections import defaultdict
+
 LOAD_WAREHOUSE = "COPY wholesale.Warehouse (W_ID, W_NAME, W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, W_TAX, W_YTD) FROM '{}';"
 LOAD_DISTRICT = "COPY wholesale.District (D_W_ID, D_ID, D_NAME, D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, D_TAX, D_YTD, D_NEXT_O_ID, W_TAX) FROM '{}';"
 LOAD_CUSTOMER = "COPY wholesale.Customer (C_W_ID, C_D_ID, C_ID, C_FIRST, C_MIDDLE, C_LAST, C_STREET_1, C_STREET_2, C_CITY, C_STATE, C_ZIP, C_PHONE, C_SINCE, C_CREDIT, C_CREDIT_LIM, C_DISCOUNT, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_DELIVERY_CNT, C_DATA, W_NAME, D_NAME) FROM '{}';"

@@ -1,6 +1,4 @@
-def next_xact(f):
-    io_line = f.readline()
-
+def next_xact(io_line, f):
     if io_line == "":  # EOF
         return None
 

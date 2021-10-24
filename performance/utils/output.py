@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
+from utils.cassandra import get_cassandra_stats
 from utils.cockroach import get_cockroach_stats
 from utils.stats import get_stats, get_throughputs
 
@@ -69,3 +70,10 @@ def print_cockroach_stats(directory, conn):
         writer = csv.writer(f)
         cockroach_stats = get_cockroach_stats(conn)
         writer.writerows(np.reshape(cockroach_stats, (-1, 1)))
+
+
+def print_cassandra_stats(directory, conn):
+    with open(f"{directory}/dbstate.csv", "w+") as f:
+        writer = csv.writer(f)
+        cassandra_stats = get_cassandra_stats(conn)
+        writer.writerows(np.reshape(cassandra_stats, (-1, 1)))

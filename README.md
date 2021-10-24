@@ -65,5 +65,29 @@ cockroachdb
 Which workload are you running? (A or B)
 A
 ```
-3. Run `python performance/main.py -d [log directory]`. Add `-x` flag to generate additional time stats for each transaction type.
-4. Run `./verify.sh [out log directory] [xact_file directory]` to check if any of the client failed.
+3. Run `./verify.sh [out log directory] [xact_file directory]` to check if any of the client failed.
+
+## Performance 
+
+```
+usage: main.py [-h] [-c CONFIG_FILE] -d DIRECTORY [-m MODE] [-s] [-x]
+
+optional arguments:
+  -h, --help      show this help message and exit
+  -c CONFIG_FILE  config file. defaults to config.json
+  -d DIRECTORY    directory containing xact logs
+  -m MODE         mode to get cassandra or cockroach stats
+  -s              flag to skip printing client and xact stats
+  -x              flag to print xact summary stats
+```
+
+### Example Runs: 
+
+1. To get all the statistics with respect to cassandra: `python performance/main.py -d ./logs -m cassandra`
+
+2. To get all the statistics with respect to cockroachdb: `python performance/main.py -d ./logs -m cockroach`
+
+3. To get all the statistics with respect to cockroachdb, including xact summary stats: 
+`python performance/main.py -d ./logs -m cockroach -x`
+
+4. To simply print final values of cockroachdb: `python performance/main.py -d ./logs -m cassandra -s`

@@ -10,6 +10,8 @@ def execute(conn, io_line):
     w_id, d_id, c_id = map(int, io_line[1:])
 
     with conn.cursor() as cur:
+        cur.execute("SET TRANSACTION AS OF SYSTEM TIME '-30s'")
+
         get_cust_info = """
             SELECT concat_ws(' ', C_FIRST, C_MIDDLE, C_LAST) as C_NAME, C_BALANCE
             FROM Customer

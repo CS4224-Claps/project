@@ -11,6 +11,8 @@ def execute(conn, io_line):
     w_id, d_id, L = map(int, io_line[1:])
 
     with conn.cursor() as cur:
+        cur.execute("SET TRANSACTION AS OF SYSTEM TIME '-30s'")
+
         get_next_avail_order_num = """
             SELECT D_NEXT_O_ID
             FROM District

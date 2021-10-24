@@ -28,18 +28,26 @@ def run_transaction(conn, op, max_retries=3):
                 # This is a retry error, so we roll back the current
                 # transaction and sleep for a bit before retrying. The
                 # sleep time increases for each failed transaction.
+                logging.debug("-----------------------------------------")
                 logging.debug("got error: %s", e)
                 conn.rollback()
-                logging.debug("EXECUTE SERIALIZATION_FAILURE BRANCH")
+                logging.debug(
+                    f"EXECUTE SERIALIZATION_FAILURE BRANCH : retried {retry} times"
+                )
                 sleep_ms = (2 ** retry) * 0.1 * (random.random() + 0.5)
                 logging.debug("Sleeping %s seconds", sleep_ms)
+                logging.debug("-----------------------------------------")
                 time.sleep(sleep_ms)
 
             except Error as e:
+                logging.debug("-----------------------------------------")
                 logging.debug("got error: %s", e)
-                logging.debug("EXECUTE NON-SERIALIZATION_FAILURE BRANCH")
-                raise e
+                logging.debug(
+                    f"EXECUTE NON-SERIALIZATION_FAILURE BRANCH : retried {retry} times"
+                )
+                logging.debug("-----------------------------------------")
 
+        logging.debug(f"Transaction did not succeed after {max_retries} retries")
         raise ValueError(f"Transaction did not succeed after {max_retries} retries")
 
 
