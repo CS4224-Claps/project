@@ -1,6 +1,7 @@
 from cassandra.cluster import Session
 
 
+@log_command
 def execute(session: Session, args):
     w_id, d_id, c_id =  map(int, args[1:])
 
