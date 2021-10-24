@@ -2,6 +2,7 @@ from cassandra import ConsistencyLevel
 from cassandra.cluster import ExecutionProfile, Cluster, EXEC_PROFILE_DEFAULT, RetryPolicy
 from cassandra.policies import RoundRobinPolicy, DowngradingConsistencyRetryPolicy
 from cassandra.query import tuple_factory
+from utils.custom_retry import CustomRetry
 
 
 def connection():
