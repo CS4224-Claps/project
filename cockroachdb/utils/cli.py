@@ -1,5 +1,4 @@
 from argparse import ArgumentParser, FileType, RawTextHelpFormatter
-import functools
 from json import load
 from datetime import datetime
 import sys

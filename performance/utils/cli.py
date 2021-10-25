@@ -23,14 +23,19 @@ def get_cockroach_dsn(conf):
     )
 
 
-def get_cassandra_session():
-    contact_points = ['192.168.48.255', '192.168.51.0', '192.168.51.2', '192.168.51.1', '192.168.48.254']
-    cluster_profile = ExecutionProfile(load_balancing_policy=RoundRobinPolicy(), 
+def get_cassandra_session(conf):
+    if "cassandra" not in conf:
+        raise ValueError("Missing cassandra field in config.json")
+
+    contact_points = conf["cassandra"]["contact_points"]
+    cluster_profile = ExecutionProfile(
+        load_balancing_policy=RoundRobinPolicy(),
         retry_policy=DowngradingConsistencyRetryPolicy(),
         consistency_level=ConsistencyLevel.LOCAL_QUORUM,
         serial_consistency_level=ConsistencyLevel.LOCAL_SERIAL,
         request_timeout=10000,
-        row_factory=tuple_factory)
+        row_factory=tuple_factory,
+    )
     cluster = Cluster(contact_points, execution_profiles={"profile": cluster_profile})
     session = cluster.connect()
 
@@ -58,19 +63,16 @@ def parse_cmdline():
         dest="mode",
         help="mode to get cassandra or cockroach stats",
         type=str,
-        default="cockroach"
+        default="cockroach",
     )
     parser.add_argument(
         "-s",
-        dest="skip", 
-        help="flag to skip printing client and xact stats", 
-        action='store_true'
+        dest="skip",
+        help="flag to skip printing client and xact stats",
+        action="store_true",
     )
     parser.add_argument(
-        "-x", 
-        dest="xacts", 
-        help="flag to print xact summary stats", 
-        action='store_true'
+        "-x", dest="xacts", help="flag to print xact summary stats", action="store_true"
     )
     args = parser.parse_args()
 

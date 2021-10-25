@@ -16,7 +16,7 @@ def main():
     init_logger(cli_args.infile, cli_args.outdir)
 
     ff = cli_args.infile
-    session = connection()
+    session = connection(cli_args.contact_points)
 
     with ff as f:
         while True:
@@ -28,6 +28,6 @@ def main():
 
     session.shutdown()
 
+
 if __name__ == "__main__":
     main()
-

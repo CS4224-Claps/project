@@ -13,6 +13,9 @@ def run(opt):
     # Create folder if not exists
     Path(opt.outdir).mkdir(parents=True, exist_ok=True)
 
+    with open(f"{opt.outdir}/DBTYPE", "w") as f:
+        f.write(opt.dbtype)
+
     commands = {}
     while client_id < CLIENTS:
         command = [
@@ -70,7 +73,7 @@ def parse_cmd():
         "-o",
         dest="outdir",
         help="output directory for logs",
-        default=f"logs/cockroachdb/{datetime.now().strftime('%d-%m_%H-%M')}",
+        default=f"logs/{datetime.now().strftime('%d-%m_%H-%M')}",
         type=Path,
     )
     args = parser.parse_args()
