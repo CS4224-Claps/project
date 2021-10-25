@@ -38,7 +38,12 @@ def execute(session: Session, args):
         for district in range(1, 11):
             # Get smallest OID with no carrier and Customer
             oid_rows = session.execute(prepare_OID.bind((w_id, district)), trace=True)
-            oid,  c_id = get_smallest_oid(oid_rows)
+            res = get_smallest_oid(oid_rows)
+
+            if res is None: 
+                continue
+
+            oid, c_id = res
 
             # update carrier
             session.execute(prepare_update_order.bind((carrier_id, w_id, district, oid)), trace=True)
