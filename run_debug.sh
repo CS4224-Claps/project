@@ -31,7 +31,8 @@ for host in ${hosts[@]}; do
 --------------------"
     sshcmd="
 cd $project_root;
-nohup python3 -u run_clients.py --db $db -n $i -i $workloadpath -v >logs/cockroachdb/$host.log 2>&1 & "
+mkdir -p logs/$db;
+nohup python3 -u run_clients.py --db $db -n $i -i $workloadpath -v >logs/$db/$host.log 2>&1 & "
     echo $sshcmd
     ssh -o LogLevel=Error $host "$sshcmd"
     ((i++))

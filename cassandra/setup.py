@@ -1,13 +1,16 @@
 from utils.connection import connection
 from utils.setup import setup
+from utils.cli import parse_cli
+import sys
 
 
 def main():
-    session = connection()
-    setup(session, './schema/schema.cql', '../../seed/data_files')    
+    cli_args = parse_cli()
+    session = connection(cli_args.contact_points)
+    setup(session, cli_args.schema, cli_args.seed_dir)
 
     session.shutdown()
 
+
 if __name__ == "__main__":
     main()
-
