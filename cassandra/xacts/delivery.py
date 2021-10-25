@@ -27,44 +27,58 @@ def execute(session: Session, args):
         "SELECT C_BALANCE, C_DELIVERY_CNT FROM wholesale.Customer WHERE C_W_ID = ? AND C_D_ID = ? AND C_ID = ?"
     )
 
-
     prepare_update_customer = session.prepare(
         "UPDATE wholesale.Customer SET C_BALANCE = ?,  C_DELIVERY_CNT = ? WHERE C_W_ID = ? AND C_D_ID = ? AND C_ID = ?"
     )
 
     try:
         print("new transaction")
-        #session.add_request_init_listener()
+        # session.add_request_init_listener()
         for district in range(1, 11):
             # Get smallest OID with no carrier and Customer
             oid_rows = session.execute(prepare_OID.bind((w_id, district)), trace=True)
             res = get_smallest_oid(oid_rows)
 
-            if res is None: 
+            if res is None:
                 continue
 
             oid, c_id = res
 
             # update carrier
-            session.execute(prepare_update_order.bind((carrier_id, w_id, district, oid)), trace=True)
+            session.execute(
+                prepare_update_order.bind((carrier_id, w_id, district, oid)), trace=True
+            )
 
             # prepare order line data
-            ol_rows = session.execute(prepare_orderline_data.bind((w_id, district, oid)), trace=True)
+            ol_rows = session.execute(
+                prepare_orderline_data.bind((w_id, district, oid)), trace=True
+            )
             c_balance_add = get_ol_amt(ol_rows)
 
             # update all order lines
             date_time = datetime.now()
             for ol_row in ol_rows:
-                session.execute(prepare_update_delivery_date.bind((date_time, w_id, district, oid, ol_row.OL_NUMBER)),
-                                trace=True)
+                session.execute(
+                    prepare_update_delivery_date.bind(
+                        (date_time, w_id, district, oid, ol_row.OL_NUMBER)
+                    ),
+                    trace=True,
+                )
 
             # prepare customer data
-            c_row = session.execute(prepare_cust_data.bind((w_id, district, c_id))).one()
+            c_row = session.execute(
+                prepare_cust_data.bind((w_id, district, c_id))
+            ).one()
             c_balance = c_row.c_balance + c_balance_add
             c_delivery = c_row.c_delivery_cnt + 1
 
             # finally update customerrrrrr
-            session.execute(prepare_update_customer.bind((c_balance, c_delivery,w_id, district, c_id)), trace=True)
+            session.execute(
+                prepare_update_customer.bind(
+                    (c_balance, c_delivery, w_id, district, c_id)
+                ),
+                trace=True,
+            )
 
     except TimeoutError as e:
         print("add try again")

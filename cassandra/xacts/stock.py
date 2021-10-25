@@ -6,7 +6,8 @@ def execute(session, input_arr):
     w_id, d_id, t, l = map(int, input_arr[1:])
 
     prepare_district = session.prepare(
-        "SELECT D_NEXT_O_ID FROM wholesale.District WHERE D_W_ID = ? AND D_ID = ?")
+        "SELECT D_NEXT_O_ID FROM wholesale.District WHERE D_W_ID = ? AND D_ID = ?"
+    )
     d_rows = session.execute(prepare_district.bind((w_id, d_id)))
 
     if not d_rows:
@@ -16,12 +17,13 @@ def execute(session, input_arr):
 
     prepare_order_line = session.prepare(
         "SELECT OL_I_ID FROM wholesale.OrderLine \
-        WHERE OL_W_ID = ? AND OL_D_ID = ? AND OL_O_ID >= ? AND OL_O_ID < ?")
-    ol_rows = session.execute(prepare_order_line.bind(
-        (w_id, d_id, (o_id - l), o_id)))
+        WHERE OL_W_ID = ? AND OL_D_ID = ? AND OL_O_ID >= ? AND OL_O_ID < ?"
+    )
+    ol_rows = session.execute(prepare_order_line.bind((w_id, d_id, (o_id - l), o_id)))
 
     prepare_stock = session.prepare(
-        "SELECT S_QUANTITY FROM wholesale.Stock WHERE S_W_ID = ? AND S_I_ID = ?")
+        "SELECT S_QUANTITY FROM wholesale.Stock WHERE S_W_ID = ? AND S_I_ID = ?"
+    )
     cnt = 0
 
     # remove dulpicates

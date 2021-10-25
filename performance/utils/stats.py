@@ -19,7 +19,8 @@ def get_stats(filename, xact_times):
     nine_nine_latency = np.percentile(xact_times, 99)
 
     return [
-        np.round(np.float64(stat), 3) for stat in (
+        np.round(np.float64(stat), 3)
+        for stat in (
             client_num,
             num_xacts,
             total_xact_time,
@@ -37,4 +38,6 @@ def get_throughputs(throughput_times):
     max_throughput = np.max(throughput_times)
     avg_throughput = np.average(throughput_times)
 
-    return [np.round(stat, 2) for stat in (min_throughput, max_throughput, avg_throughput)]
+    return [
+        np.round(stat, 2) for stat in (min_throughput, max_throughput, avg_throughput)
+    ]

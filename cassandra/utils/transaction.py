@@ -17,7 +17,7 @@ command_to_func = {
     "S": stock,
     "I": popular_item,
     "T": top_balance,
-    "R": related_customer
+    "R": related_customer,
 }
 
 
