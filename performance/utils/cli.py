@@ -80,9 +80,9 @@ def parse_cmdline():
         raise Exception("Unknown mode. Please supply mode as cassandra or cockroach")
 
     if args.config_file:
-        args.__dict__.update(cockroach_dsn=get_cockroach_dsn(load(args.config_file)))
-
-    args.__dict__.update(cass_sess=get_cassandra_session())
+        config = load(args.config_file)
+        args.__dict__.update(cockroach_dsn=get_cockroach_dsn(config))
+        args.__dict__.update(cass_sess=get_cassandra_session(config))
 
     return args
 
