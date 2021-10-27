@@ -14,14 +14,11 @@ def execute(session, args):
     d_next_o_id = int(district.d_next_o_id)
 
     # Get last L orders
-    orders = []
-    for o_id in range(d_next_o_id - num_orders, d_next_o_id):
-        prepare_order = session.prepare(
-            "SELECT O_ID, O_ENTRY_D, O_C_ID FROM wholesale.Orders WHERE O_W_ID = ? AND O_D_ID = ? AND  O_ID = ?"
-        )
-        rows = session.execute(prepare_order.bind((w_id, d_id, o_id)))
-        order = rows[0]
-        orders.append(order)
+    prepare_order = session.prepare(
+        "SELECT O_ID, O_ENTRY_D, O_C_ID FROM wholesale.Orders WHERE O_W_ID = ? AND O_D_ID = ? AND  O_ID >= ?"
+    )
+    rows = session.execute(prepare_order.bind((w_id, d_id, d_next_o_id - num_orders)))
+    orders = [order for order in rows]
 
     # Get customer info for last L orders
     customers = []
@@ -37,9 +34,7 @@ def execute(session, args):
     # Maintain a set of I_IDs for all items for each order (to check for presence of popular item)
     order_item_sets = []
     # Maintain a list of popular items for each order
-    order_popular_items = []
-    # Maintain an overall map of popular item id : id names
-    popular_item_id_names = {}
+    order_popular_item_lists = []
     for order in orders:
         prepare_orderline = session.prepare(
             "SELECT OL_I_ID, I_NAME, OL_QUANTITY FROM wholesale.OrderLine WHERE OL_W_ID = ? AND OL_D_ID = ? AND OL_O_ID = ?"
@@ -56,15 +51,18 @@ def execute(session, args):
                 max_qty = row.ol_quantity
                 popular_items = [row]
         order_item_sets.append(order_item_set)
-        order_popular_items.append(popular_items)
-        popular_item_id_names[row.ol_i_id] = row.i_name
+        order_popular_item_lists.append(popular_items)
 
-    # Calculate the number of orders that contain each popular item
-    popular_item_occurrences = {i_id: 0 for i_id in popular_item_id_names}
-    for i_id in popular_item_occurrences:
+    # Count the number of popular item occurrences {(id, name): int}
+    popular_item_occurrences = {}
+    for order_popular_item_list in order_popular_item_lists:
+        for popular_item in order_popular_item_list:
+            popular_item_occurrences[(popular_item.ol_i_id, popular_item.i_name)] = 0
+
+    for i_id, i_name in popular_item_occurrences.keys():
         for order_item_set in order_item_sets:
             if i_id in order_item_set:
-                popular_item_occurrences[i_id] += 1
+                popular_item_occurrences[(i_id, i_name)] += 1
 
     # Print info
     print("1. District: ", w_id, d_id)
@@ -79,11 +77,11 @@ def execute(session, args):
             customers[i].c_last,
         )
         print("Popular items: ")
-        for item in order_popular_items[i]:
+        for item in order_popular_item_lists[i]:
             print("  ", item.i_name, item.ol_quantity)
 
     print(f"4. Percentage of popular items in last {num_orders} orders: ")
-    for item_id, occurrences in popular_item_occurrences.items():
+    for (_, i_name), occurrences in popular_item_occurrences.items():
         print(
-            "  ", popular_item_id_names[item_id], f"{occurrences / num_orders * 100}%"
+            "  ", i_name, f"{occurrences / num_orders * 100}%"
         )
