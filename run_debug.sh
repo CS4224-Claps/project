@@ -1,6 +1,15 @@
 #! /usr/bin/env bash
 hosts=()
 
+if [ ! -f config.json ]; then
+    echo "Please put a config.json in the current folder"
+    exit 1
+else
+    echo "Found config.json... Please check if it is correct!"
+    cat config.json
+    echo ""
+fi
+
 echo "Where is the project root located?"
 read project_root
 
