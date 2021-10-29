@@ -6,7 +6,6 @@ from cassandra.cluster import (
     RetryPolicy,
 )
 from cassandra.policies import RoundRobinPolicy, DowngradingConsistencyRetryPolicy
-from utils.custom_retry import CustomRetry
 
 
 def connection(contact_points):
@@ -14,7 +13,6 @@ def connection(contact_points):
     # contact_points = ['192.168.48.255', '192.168.51.0', '192.168.51.2', '192.168.51.1', '192.168.48.254']
     cluster_profile = ExecutionProfile(
         load_balancing_policy=RoundRobinPolicy(),
-        retry_policy=CustomRetry(5, 2, 2),
         consistency_level=ConsistencyLevel.LOCAL_QUORUM,
         serial_consistency_level=ConsistencyLevel.LOCAL_SERIAL,
         request_timeout=10000,
