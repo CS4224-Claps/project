@@ -81,8 +81,11 @@ def parse_cmdline():
 
     if args.config_file:
         config = load(args.config_file)
-        args.__dict__.update(cockroach_dsn=get_cockroach_dsn(config))
-        args.__dict__.update(cass_sess=get_cassandra_session(config))
+
+        if args.mode == 'cockroach':
+            args.__dict__.update(cockroach_dsn=get_cockroach_dsn(config))
+        else:
+            args.__dict__.update(cass_sess=get_cassandra_session(config))
 
     return args
 
