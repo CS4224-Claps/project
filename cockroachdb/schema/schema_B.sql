@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS a_raw;
-CREATE DATABASE IF NOT EXISTS a_raw;
-USE a_raw;
+DROP DATABASE IF EXISTS wholesale_B;
+CREATE DATABASE IF NOT EXISTS wholesale_B;
+USE wholesale_B;
 
 -- DROP TABLE IF EXISTS Stock, OrderLine, Item, Orders, Customer, District, Warehouse;
 
