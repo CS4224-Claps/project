@@ -17,18 +17,24 @@ def execute(session, args):
     prepare_orderline = session.prepare(
         "SELECT OL_I_ID FROM wholesale.Orderline WHERE OL_W_ID = ? AND OL_D_ID = ? AND OL_O_ID = ?"
     )
+    future_orderlines = []
     for o_id in o_ids:
-        rows = session.execute(prepare_orderline.bind((c_w_id, c_d_id, o_id)))
+        future_orderlines.append(session.execute_async(prepare_orderline.bind((c_w_id, c_d_id, o_id))))
+    for future_orderline in future_orderlines:
+        rows = future_orderline.result()
         order_itemsets.append({orderline.ol_i_id for orderline in rows})
 
     # For each of customer's orders, find all orders from different warehouse with >=2 common items
     related_orders = set()
     prepare_orderline = session.prepare(
-        "SELECT * FROM wholesale.Orderline_by_iid WHERE OL_I_ID IN ?"
+        "SELECT * FROM wholesale.Orderline_by_iid WHERE OL_I_ID = ?"
     )
     for order_itemset in order_itemsets:
         seen_order_identifiers = set()
-        rows = session.execute(prepare_orderline.bind((order_itemset,)))
+        future_orderlines = []
+        for i_id in order_itemset:
+            future_orderlines.append(session.execute_async(prepare_orderline.bind((i_id,))))
+        rows = [row for future_orderline in future_orderlines for row in future_orderline.result()]
         for row in rows:
             # Related customer must be from different warehouse
             if row.ol_w_id == c_w_id:
@@ -44,9 +50,12 @@ def execute(session, args):
     prepare_orders = session.prepare(
         "SELECT O_C_ID FROM wholesale.Orders WHERE O_W_ID = ? AND O_D_ID = ? AND O_ID = ?"
     )
+    future_customers = []
     related_customers = []
     for w_id, d_id, o_id in related_orders:
-        rows = session.execute(prepare_orders.bind((w_id, d_id, o_id)))
+        future_customers.append(session.execute_async(prepare_orders.bind((w_id, d_id, o_id))))
+    for i, (w_id, d_id, _) in enumerate(related_orders):
+        rows = future_customers[i].result()
         related_c_id = rows[0].o_c_id
         related_customers.append((w_id, d_id, related_c_id))
 

@@ -21,25 +21,29 @@ def execute(session, args):
     orders = [order for order in rows]
 
     # Get customer info for last L orders
-    customers = []
-    for order in orders:
-        prepare_customer = session.prepare(
-            "SELECT C_FIRST, C_MIDDLE, C_LAST FROM wholesale.Customer WHERE C_W_ID = ? AND C_D_ID = ? AND C_ID = ?"
-        )
-        rows = session.execute(prepare_customer.bind((w_id, d_id, order.o_c_id)))
-        customer = rows[0]
-        customers.append(customer)
+    prepare_customer = session.prepare(
+        "SELECT C_FIRST, C_MIDDLE, C_LAST FROM wholesale.Customer WHERE C_W_ID = ? AND C_D_ID = ? AND C_ID = ?"
+    )
+    future_customers = []
+    for i, order in enumerate(orders):
+        future_customers.append(session.execute_async(prepare_customer.bind((w_id, d_id, order.o_c_id))))
+
+    customers = [future_customer.result()[0] for future_customer in future_customers]
 
     # Examine order lines for last L orders
     # Maintain a set of I_IDs for all items for each order (to check for presence of popular item)
     order_item_sets = []
     # Maintain a list of popular items for each order
     order_popular_item_lists = []
-    for order in orders:
-        prepare_orderline = session.prepare(
-            "SELECT OL_I_ID, I_NAME, OL_QUANTITY FROM wholesale.OrderLine WHERE OL_W_ID = ? AND OL_D_ID = ? AND OL_O_ID = ?"
-        )
-        rows = session.execute(prepare_orderline.bind((w_id, d_id, order.o_id)))
+
+    prepare_orderline = session.prepare(
+        "SELECT OL_I_ID, I_NAME, OL_QUANTITY FROM wholesale.OrderLine WHERE OL_W_ID = ? AND OL_D_ID = ? AND OL_O_ID = ?"
+    )
+    future_orderlines = []
+    for i, order in enumerate(orders):
+        future_orderlines.append(session.execute_async(prepare_orderline.bind((w_id, d_id, order.o_id))))
+    for future_orderline in future_orderlines:
+        rows = future_orderline.result()
         order_item_set = set()
         max_qty = 0
         popular_items = []
