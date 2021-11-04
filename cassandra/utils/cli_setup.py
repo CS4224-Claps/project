@@ -21,20 +21,16 @@ def parse_cli():
         type=FileType("r"),
     )
     cli_parser.add_argument(
-        "-i",
-        dest="infile",
-        type=FileType("r"),
-        nargs="?",
-        help="transaction file to run",
+        "--schema",
+        dest="schema",
+        default="cassandra/schema/schema.cql",
+        help="schema file to run",
     )
     cli_parser.add_argument(
-        "-v", "--verbose", action="store_true", help="print debug info"
-    )
-    cli_parser.add_argument(
-        "-o",
-        dest="outdir",
-        help="output directory for logs",
-        default=f"logs/cassandra/{datetime.now().strftime('%d-%m_%H')}",
+        "--seed",
+        dest="seed_dir",
+        help="directory for seed file",
+        default="../seed/data_files",
     )
 
     args = cli_parser.parse_args()

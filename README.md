@@ -28,6 +28,20 @@ export PATH=$PATH:$CASSANDRA_HOME/bin:$COCKROACHDB_HOME
 ### Seeding the database
 
 1. `python cassandra/setup.py [--schema cassandra/schema/schema.cql] [--seed ../seed/data_files/]`. (In brackets are the configuration options with its default values)
+2. The following gives more information about the command line options 
+for the cassandra setup script:
+
+```
+usage: setup.py [-h] [-c CONFIG_FILE] [--schema SCHEMA] [--seed SEED_DIR]
+
+Parse input file and output file dest
+
+optional arguments:
+  -h, --help       show this help message and exit
+  -c CONFIG_FILE   connection config file. defaults to config.json
+  --schema SCHEMA  schema file to run
+  --seed SEED_DIR  directory for seed file
+```
 
 ## `cockroachdb`
 
