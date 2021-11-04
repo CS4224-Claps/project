@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 hosts=()
-db="cassandra"
 
 if [ ! -f config.json ]; then
     echo "Please put a config.json in the current folder"
@@ -13,6 +12,9 @@ fi
 
 echo "Where is the project root located?"
 read project_root
+
+echo "Which db are you using? (cassandra or cockroachdb)"
+read db
 
 if [[ $(whoami) == "cs4224d" ]]; then
     hosts=("xcnd35" "xcnd36" "xcnd37" "xcnd38" "xcnd39")
@@ -29,7 +31,7 @@ else
 
     echo "Enter path to the workload you are running"
     read workloadpath
-fi 
+fi
 
 i=0
 for host in ${hosts[@]}; do
