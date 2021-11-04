@@ -145,7 +145,7 @@ def load_data(data_folder):
     Loads data from the data_folder for unmodified csvs, and the TEMP folder for modified csvs.
     This uses the COPY command which is only usable in cqlsh, not via the python driver.
     """
-    cmd = ["cqlsh", "xcnd35"]
+    cmd = ["cqlsh", "$$HOSTNAME$$"]
     subprocess.run(
         cmd,
         input=LOAD_WAREHOUSE.format(os.path.join(data_folder, WAREHOUSE)),

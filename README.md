@@ -18,6 +18,7 @@ export PATH=$PATH:$CASSANDRA_HOME/bin:$COCKROACHDB_HOME
 4. Download dependencies by running `pip install -r requirements.txt`
 5. The nodes has access to `nohup`
 6. Set the configuration options following the example given in `config.json.example`.
+7. Make sure you are in one of the nodes (you might need to change the code manually if you mistakenly run this in a wrong node). Run `./setup.sh` once. This will create a HOSTNAME in the root folder.
 
 ## `cassandra`
 
@@ -28,7 +29,7 @@ export PATH=$PATH:$CASSANDRA_HOME/bin:$COCKROACHDB_HOME
 ### Seeding the database
 
 1. `python cassandra/setup.py [--schema cassandra/schema/schema.cql] [--seed ../seed/data_files/]`. (In brackets are the configuration options with its default values)
-2. The following gives more information about the command line options 
+2. The following gives more information about the command line options
 for the cassandra setup script:
 
 ```
@@ -51,13 +52,15 @@ optional arguments:
 
 ### Seeding the database
 
-We assume that a python file server is running inside your seed data folder at `xcnd36`.
-If that is not the case, change all occurrence of `xcnd36` in `cockroachdb/schema/schema*` to the fileserver hostname.
+Prerequisite: You've run the one-time setup ( `./setup.sh` ). Look at the values stored in the file HOSTNAME in your root folder.
+
+We assume that a python file server is running inside your seed data folder at HOSTNAME.
+If that is not the case, change all occurrence of HOSTNAME in `cockroachdb/schema/schema*` to the fileserver hostname.
 
 Note that the fileserver must be reachable by the node you are running the file from.
 
-1. Start an http file server on `xcnd36`. `ssh xcnd36 && cd seed && python -m http.server 3000`
-2. In `xcnd35` (any other node except `xcnd36`), run `cd [project root]/cockroachdb/schema && coc sql --file schema_A.sql`
+1. Start an http file server on HOSTNAME. `ssh HOSTNAME && cd seed && python -m http.server 3000`
+2. In any other node except HOSTNAME, run `cd [project root]/cockroachdb/schema && coc sql --file schema_A.sql`
 
 It should take 5 - 10 minutes to setup the entire database. After this step, you can directly jump to the `Run experiments` section.
 

@@ -146,15 +146,15 @@ ALTER TABLE Orders SPLIT AT VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), 
 ALTER TABLE Orderline SPLIT AT VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10);
 ALTER TABLE Stock SPLIT AT VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10);
 
--- run `cd seed/ && python3 -m http.server 3000` in xcnd36
+-- run `cd seed/ && python3 -m http.server 3000` in $$HOSTNAME$$
 
-IMPORT INTO Warehouse CSV DATA ('http://xcnd36:3000/data_files/warehouse.csv') WITH nullif = 'null';
-IMPORT INTO District CSV DATA ('http://xcnd36:3000/data_files/district.csv') WITH nullif = 'null';
-IMPORT INTO Customer CSV DATA ('http://xcnd36:3000/data_files/customer.csv') WITH nullif = 'null';
-IMPORT INTO Orders (O_W_ID, O_D_ID, O_ID, O_C_ID, O_CARRIER_ID, O_OL_CNT, O_ALL_LOCAL, O_ENTRY_D) CSV DATA ('http://xcnd36:3000/data_files/order.csv') WITH nullif = 'null';
-IMPORT INTO Item CSV DATA ('http://xcnd36:3000/data_files/item.csv') WITH nullif = 'null';
-IMPORT INTO OrderLine CSV DATA ('http://xcnd36:3000/data_files/order-line.csv') WITH nullif = 'null';
-IMPORT INTO Stock CSV DATA ('http://xcnd36:3000/data_files/stock.csv') WITH nullif = 'null';
+IMPORT INTO Warehouse CSV DATA ('http://$$HOSTNAME$$:3000/data_files/warehouse.csv') WITH nullif = 'null';
+IMPORT INTO District CSV DATA ('http://$$HOSTNAME$$:3000/data_files/district.csv') WITH nullif = 'null';
+IMPORT INTO Customer CSV DATA ('http://$$HOSTNAME$$:3000/data_files/customer.csv') WITH nullif = 'null';
+IMPORT INTO Orders (O_W_ID, O_D_ID, O_ID, O_C_ID, O_CARRIER_ID, O_OL_CNT, O_ALL_LOCAL, O_ENTRY_D) CSV DATA ('http://$$HOSTNAME$$:3000/data_files/order.csv') WITH nullif = 'null';
+IMPORT INTO Item CSV DATA ('http://$$HOSTNAME$$:3000/data_files/item.csv') WITH nullif = 'null';
+IMPORT INTO OrderLine CSV DATA ('http://$$HOSTNAME$$:3000/data_files/order-line.csv') WITH nullif = 'null';
+IMPORT INTO Stock CSV DATA ('http://$$HOSTNAME$$:3000/data_files/stock.csv') WITH nullif = 'null';
 
 CREATE INDEX balance on Customer (C_BALANCE DESC); --top balance tx
 -- delivery tx
