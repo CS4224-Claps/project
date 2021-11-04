@@ -6,5 +6,5 @@ host=$(hostname -s)
 echo "This is a one time setup... Changing all host placeholder -> $host"
 echo "$host" > HOSTNAME && chmod -w HOSTNAME # will error on second run
 
-sed -i "s|\\\$\\\$HOSTNAME\\\$\\\$|$host|" cassandra/utils/setup.py || true
-sed -i "s|\\\$\\\$HOSTNAME\\\$\\\$|$host|" cockroachdb/schema/schema_*.sql || true
+sed -i "s|\\\$\\\$HOSTNAME\\\$\\\$|$host|" cassandra/utils/setup.py 2> /dev/null || true
+sed -i "s|\\\$\\\$HOSTNAME\\\$\\\$|$host|" cockroachdb/schema/schema_*.sql 2> /dev/null || true

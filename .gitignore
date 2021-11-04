@@ -12,3 +12,6 @@ nohup.out
 
 # HOSTNAME stores hostname used. Used in cassandra and cockroachdb database seeding process
 HOSTNAME
+
+# files submitted
+group-d/

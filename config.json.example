@@ -4,7 +4,7 @@
         "password": "pass",
         "host": "localhost",
         "port": 26257,
-        "database": "db",
+        "database": "wholesale_A",
         "max_retries": 3
     },
     "cassandra": {

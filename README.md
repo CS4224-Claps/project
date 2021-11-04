@@ -17,7 +17,7 @@ export PATH=$PATH:$CASSANDRA_HOME/bin:$COCKROACHDB_HOME
 3. You are able to install python packages. We use [pyenv](https://github.com/pyenv/pyenv#basic-github-checkout).
 4. Download dependencies by running `pip install -r requirements.txt`
 5. The nodes has access to `nohup`
-6. Set the configuration options following the example given in `config.json.example`.
+6. Set the configuration options following the example given in `config.json.example`. The name of the keys should be self-explanatory.
 7. Make sure you are in one of the nodes (you might need to change the code manually if you mistakenly run this in a wrong node). Run `./setup.sh` once. This will create a HOSTNAME in the root folder.
 
 ## `cassandra`
@@ -28,9 +28,9 @@ export PATH=$PATH:$CASSANDRA_HOME/bin:$COCKROACHDB_HOME
 
 ### Seeding the database
 
-1. `python cassandra/setup.py [--schema cassandra/schema/schema.cql] [--seed ../seed/data_files/]`. (In brackets are the configuration options with its default values)
-2. The following gives more information about the command line options
-for the cassandra setup script:
+1. Run `python cassandra/setup.py [--schema SCHEMA_FILE] [--seed SEED_DIR]`. By default, the schema files can be found at `cassandra/schema` folder
+
+The following gives more information about the command line options for the cassandra setup script:
 
 ```
 usage: setup.py [-h] [-c CONFIG_FILE] [--schema SCHEMA] [--seed SEED_DIR]
@@ -40,29 +40,32 @@ Parse input file and output file dest
 optional arguments:
   -h, --help       show this help message and exit
   -c CONFIG_FILE   connection config file. defaults to config.json
-  --schema SCHEMA  schema file to run
-  --seed SEED_DIR  directory for seed file
+  --schema SCHEMA  schema file to run (default to: cassandra/schema/schema.cql)
+  --seed SEED_DIR  directory for seed file (default to: ../seed/data_files/)
 ```
+
+It should take 5 - 10 minutes to setup the entire database. After this step, you can directly jump to the [Run experiments](#run-experiments) section.
 
 ## `cockroachdb`
 
 ### Database Setup
 
-// TODO
+Please follow this [tutorial](https://www.cockroachlabs.com/docs/stable/start-a-local-cluster.html) closely. We use the secure setup.
 
 ### Seeding the database
 
 Prerequisite: You've run the one-time setup ( `./setup.sh` ). Look at the values stored in the file HOSTNAME in your root folder.
 
-We assume that a python file server is running inside your seed data folder at HOSTNAME.
-If that is not the case, change all occurrence of HOSTNAME in `cockroachdb/schema/schema*` to the fileserver hostname.
+Assumptions:
+1. A python file server is running inside your seed data folder at HOSTNAME. If that is not the case, change all occurrence of HOSTNAME in `cockroachdb/schema/schema*` to the fileserver hostname.
+2. You are running an insecure node setup. If you are using a secure node setup, modify flags (e.g. `--certs-dir`) accordingly.
 
-Note that the fileserver must be reachable by the node you are running the file from.
+Note that the fileserver must be reachable by the node you are running the schema file from.
 
-1. Start an http file server on HOSTNAME. `ssh HOSTNAME && cd seed && python -m http.server 3000`
-2. In any other node except HOSTNAME, run `cd [project root]/cockroachdb/schema && coc sql --file schema_A.sql`
+1. Start an http file server on HOSTNAME. `ssh HOSTNAME && cd [SEED_DIR] && python -m http.server 3000 &`
+2. In any other node except HOSTNAME, run `cockroach sql --insecure --host $(hostname -s) --file [SCHEMA_FILE]`. By default, the schema files can be found at `cockroachdb/schema`
 
-It should take 5 - 10 minutes to setup the entire database. After this step, you can directly jump to the `Run experiments` section.
+It should take 5 - 10 minutes to setup the entire database. After this step, you can directly jump to the [Run experiments](#run-experiments) section.
 
 ## Run experiments
 
@@ -72,15 +75,18 @@ The instructions below assume that the database are properly setup.
 2. Run `bash run.sh`. An interaction should look like the following.
 ```bash
 $ bash run.sh
+Found config.json... Please check if it is correct!
+[config.json REDACTED]
 Where is the project root located?
 ~/project
 Which db are you using? (cassandra or cockroachdb)
 cockroachdb
-Which workload are you running? (A or B)
-A
+Please input 5 hostname separated by whitespace
+xcnd35 xcnd36 xcnd37 xcnd38 xcnd39
+Enter path to the workload you are running
+~/seed/xact_files_A
 ```
 3. The experiment logs would be available in `logs/dd-mm_HH-MM`. The `DBTYPE` file will indicate which db it is on.
-4. Run `./verify.sh [out log directory] [xact_file directory]` to check if any of the client failed.
 
 ## Performance
 
@@ -99,13 +105,10 @@ optional arguments:
 ### Example Runs:
 
 1. To get all the statistics with respect to cassandra: `python performance/main.py -d ./logs -m cassandra`
-
 2. To get all the statistics with respect to cockroachdb: `python performance/main.py -d ./logs -m cockroach`
-
-3. To get all the statistics with respect to cockroachdb, including xact summary stats:
+3. To get all the statistics with respect to cockroachdb, including xact summary stats, add the `-x` flag:
 `python performance/main.py -d ./logs -m cockroach -x`
-
-4. To simply print final values of cockroachdb: `python performance/main.py -d ./logs -m cassandra -s`
+4. To simply print final values of cockroachdb, use the `-s` flag: `python performance/main.py -d ./logs -m cassandra -s`
 
 
 ## Misc
