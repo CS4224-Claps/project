@@ -11,7 +11,7 @@ def execute(conn, io_line):
         cur.execute("SET TRANSACTION AS OF SYSTEM TIME '-30s'")
 
         get_related_customers = """
-            SELECT o2.O_W_ID, o2.O_D_ID, o2.O_C_ID
+            SELECT DISTINCT o2.O_W_ID, o2.O_D_ID, o2.O_C_ID
             FROM Orders o1, Orders o2
             WHERE o1.O_W_ID = (%s) AND o1.O_D_ID = (%s) AND o1.O_C_ID = (%s) -- o1 is current customer's order
                 AND o1.O_W_ID <> o2.O_W_ID

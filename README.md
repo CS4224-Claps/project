@@ -8,7 +8,7 @@ One way to set this up is by running the following from `nodeA`.
 ssh-keygen -t ed25519
 cp ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
 ```
-2. CockroachDB and CASSANDRA is installed in your local node (`temp` folder) and it is in your `PATH`. If that's not the case you can add this lines to `~/.bashrc`
+2. CockroachDB and Cassandra is installed in your local node (`temp` folder) and they are accessible in your `PATH`. If that's not the case you can add this lines to `~/.bashrc`
 ```bash
 export CASSANDRA_HOME=/temp/path/to/cassandra
 export COCKROACHDB_HOME=/temp/path/to/cockroach/db
@@ -21,43 +21,35 @@ export PATH=$PATH:$CASSANDRA_HOME/bin:$COCKROACHDB_HOME
 
 ## `cassandra`
 
+### Database Setup
+
+// TODO
+
 ### Seeding the database
 
 1. `python cassandra/setup.py [--schema cassandra/schema/schema.cql] [--seed ../seed/data_files/]`. (In brackets are the configuration options with its default values)
 
 ## `cockroachdb`
 
+### Database Setup
+
+// TODO
+
 ### Seeding the database
 
+We assume that a python file server is running inside your seed data folder at `xcnd36`.
+If that is not the case, change all occurrence of `xcnd36` in `cockroachdb/schema/schema*` to the fileserver hostname.
+
+Note that the fileserver must be reachable by the node you are running the file from.
+
 1. Start an http file server on `xcnd36`. `ssh xcnd36 && cd seed && python -m http.server 3000`
-2. In `xcnd35`, run `cd [project root]/cockroachdb/schema && coc sql --file raw_init.sql`
+2. In `xcnd35` (any other node except `xcnd36`), run `cd [project root]/cockroachdb/schema && coc sql --file schema_A.sql`
 
-It should take ~ 5 minutes to setup the entire database.
-
-### Running the clients individually
-
-1. Before running, ensure that you have the configuration file in the root
-directory. An example of the configuration file can be found in `config.json.example`
-
-2. To execute, run the command: `python cockroachdb/main.py -i <transaction file>`. More options can be seen below.
-
-```
-$ python cockroachdb/main.py -h
-usage: main.py [-h] [-v] [-c CONFIG_FILE] [-i [INFILE]] [-o OUTDIR]
-
-optional arguments:
-  -h, --help      show this help message and exit
-  -v, --verbose   print debug info
-  -c CONFIG_FILE  connection config file. defaults to config.json
-  -i [INFILE]     input file containing xacts
-  -o OUTDIR       output directory for logs
-```
-
-### Running all clients in one node
-
-- To run all clients in one node: `python run_clients.py --db cockroachdb -i ~/seed/xact_files_A -n 0 &`
+It should take 5 - 10 minutes to setup the entire database. After this step, you can directly jump to the `Run experiments` section.
 
 ## Run experiments
+
+The instructions below assume that the database are properly setup.
 
 1. Seed the database. Follow the instructions for each database above.
 2. Run `bash run.sh`. An interaction should look like the following.
@@ -97,3 +89,31 @@ optional arguments:
 `python performance/main.py -d ./logs -m cockroach -x`
 
 4. To simply print final values of cockroachdb: `python performance/main.py -d ./logs -m cassandra -s`
+
+
+## Misc
+
+### Running the clients individually
+
+If you would like to run just a single client:
+
+1. Before running, ensure that you have the configuration file in the root
+directory. An example of the configuration file can be found in `config.json.example`
+
+2. To execute, run the command: `python cockroachdb/main.py -i <transaction file>`. More options can be seen below.
+
+```
+$ python cockroachdb/main.py -h
+usage: main.py [-h] [-v] [-c CONFIG_FILE] [-i [INFILE]] [-o OUTDIR]
+
+optional arguments:
+  -h, --help      show this help message and exit
+  -v, --verbose   print debug info
+  -c CONFIG_FILE  connection config file. defaults to config.json
+  -i [INFILE]     input file containing xacts
+  -o OUTDIR       output directory for logs
+```
+
+### Running all clients in one node
+
+- To run all clients in one node: `python run_clients.py --db cockroachdb -i ~/seed/xact_files_A -n 0 &`
