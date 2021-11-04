@@ -24,8 +24,7 @@ export PATH=$PATH:$CASSANDRA_HOME/bin:$COCKROACHDB_HOME
 
 ### Database Setup
 
-1. Run the following command: `bash cockroach-start.sh [HOSTS]`.
-2. For example: `bash cockroach-start.sh xcnd35 xcnd36 xcnd37 xcnd38 xcnd39`
+// TODO
 
 Note; Ensure that you have your 5 hosts setup, else the command would fail. 
 
@@ -54,6 +53,9 @@ It should take 5 - 10 minutes to setup the entire database. After this step, you
 ### Database Setup
 
 Please follow this [tutorial](https://www.cockroachlabs.com/docs/stable/start-a-local-cluster.html) closely. We use the secure setup.
+
+1. Run the following command: `bash cockroach-start.sh [HOSTS]`.
+2. For example: `bash cockroach-start.sh xcnd35 xcnd36 xcnd37 xcnd38 xcnd39`
 
 ### Seeding the database
 
