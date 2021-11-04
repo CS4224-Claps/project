@@ -24,7 +24,10 @@ export PATH=$PATH:$CASSANDRA_HOME/bin:$COCKROACHDB_HOME
 
 ### Database Setup
 
-// TODO
+1. Run the following command: `bash cockroach-start.sh [HOSTS]`.
+2. For example: `bash cockroach-start.sh xcnd35 xcnd36 xcnd37 xcnd38 xcnd39`
+
+Note; Ensure that you have your 5 hosts setup, else the command would fail. 
 
 ### Seeding the database
 
