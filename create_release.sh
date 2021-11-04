@@ -5,7 +5,7 @@ roll() {
     target_dir="release/$db"
     mkdir -p $target_dir;
     cp -a $db performance $target_dir
-    cp -a README.md run.sh requirements.txt config.json.example run_clients.py $target_dir
+    cp -a README.md setup.sh run.sh requirements.txt config.json.example run_clients.py $target_dir
     zip -r release/d.$db.zip $target_dir
 }
 
