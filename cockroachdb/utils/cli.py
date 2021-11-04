@@ -7,7 +7,7 @@ import sys
 def get_dsn(conf):
     config = _get_cockroach_config(conf)
 
-    return "postgresql://{}:{}@{}:{}/{}?sslmode=require".format(
+    return "postgresql://{}:{}@{}:{}/{}?sslmode=prefer".format(
         config["username"],
         config["password"],
         config["host"],
