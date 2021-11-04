@@ -24,9 +24,20 @@ export PATH=$PATH:$CASSANDRA_HOME/bin:$COCKROACHDB_HOME
 
 ### Database Setup
 
-// TODO
+1. For each host, add the associated `cassandra.yaml` from the files in `cassandra/conf` 
 
-Note; Ensure that you have your 5 hosts setup, else the command would fail. 
+For example, `cassandra-xcnd35.yaml` should belong under the server `xcnd35`, which should 
+be located under the file `$CASSANDRA_HOME/conf/cassandra.yaml`. The same applies for the 
+servers `xcnd36` to `xcnd39`. 
+
+2. Once done, run `$CASSANDRA_HOME/bin/cassandra` 
+
+Note: These are also under the assumption that you have set the alias for `CASSANDRA_HOME`
+and that you have your 5 hosts setup, else the command would fail. 
+
+Note: Alternativel, you can specify the configuration folder using: 
+`$CASSANDRA_HOME/bin/cassandra -D cassandra.config=$CASSANDRA_HOME/conf`, where you specify 
+the configuration folder above. 
 
 ### Seeding the database
 
