@@ -1,4 +1,4 @@
-# Cassandra Project 
+# CockroachDB Project 
 
 ## Prerequisites 
 
@@ -12,8 +12,8 @@ cp ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
 2. CASSANDRA is installed in your local node (`temp` folder) and it is 
 in your `PATH`. If that's not the case you can add this lines to `~/.bashrc`
 ```bash
-export CASSANDRA_HOME=/temp/path/to/cassandra
-export PATH=$PATH:$CASSANDRA_HOME/bin
+export COCKROACHDB_HOME=/temp/path/to/cockroach/db
+export PATH=$PATH:$COCKROACHDB_HOME
 ```
 3. You are able to install python packages. We use [pyenv](https://github.com/pyenv/pyenv#basic-github-checkout).
 4. Download dependencies by running `pip install -r requirements.txt`
@@ -22,17 +22,24 @@ export PATH=$PATH:$CASSANDRA_HOME/bin
 
 ## Seeding the Database 
 
-You would need to run the `setup.py` script in order to populate the database 
-with the necessary data. 
+You would need to setup a file server at `xcnd36` to allow
+the files to be populated into the database. 
 
-1. `python cassandra/setup.py [--schema cassandra/schema/schema.cql] [--seed ~/seed/data_files/]`. 
-(In brackets are the configuration options with its default values)
+### Workload A 
+
+1. Start an http file server on `xcnd36`. `ssh xcnd36 && cd seed && python -m http.server 3000`
+2. In `xcnd35`, run `cd [project root]/cockroachdb/schema && coc sql --file schema_A.sql`
+
+### Workload B
+
+1. Start an http file server on `xcnd36`. `ssh xcnd36 && cd seed && python -m http.server 3000`
+2. In `xcnd35`, run `cd [project root]/cockroachdb/schema && coc sql --file schema_B.sql`
 
 ## Running the clients individually
 
 1. Before running, ensure that you have the configuration file in the root
 directory. An example of the configuration file can be found in `config.json.example`
-2. To execute, run the command: `python cassandra/main.py -i <transaction file>`. More options can be seen below.
+2. To execute, run the command: `python cockroahcdb/main.py -i <transaction file>`. More options can be seen below.
 
 ## Run experiment
 
@@ -47,7 +54,7 @@ cockroachdb
 Which workload are you running? (A or B)
 A
 ```
-3. Please note that you must state that you are using **cassandra** as your db. 
+3. Please note that you must state that you are using **cockroachdb** as your db. 
 4. The experiment logs would be available in `logs/dd-mm_HH-MM`. The `DBTYPE` file will indicate which db it is on.
 
 ## Performance
@@ -67,5 +74,5 @@ optional arguments:
   -x              flag to print xact summary stats
 ```
 
- To get all the statistics with respect to cassandra: `python performance/main.py -d ./logs -m cassandra`
+ To get all the statistics with respect to cockroach: `python performance/main.py -d ./logs -m cockroach`
  
