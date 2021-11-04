@@ -104,7 +104,14 @@ Enter path to the workload you are running
 ```
 3. The experiment logs would be available in `logs/dd-mm_HH-MM`. The `DBTYPE` file will indicate which db it is on.
 
+**NOTE**: It is possible that the logs might end up in two folders, such as `logs/28-10_21-00` 
+and `logs/28-10_21-01`. As a result, it is your responsibility to consolidate these logs 
+into one common folder when running the performance metric retrieval. 
+
 ## Performance
+
+In order to retrieve the performance metrics, `performance/main.py` should be run 
+only when the experiment has completed. 
 
 ```
 usage: main.py [-h] [-c CONFIG_FILE] -d DIRECTORY [-m MODE] [-s] [-x]
