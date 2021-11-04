@@ -1,6 +1,6 @@
 from utils.connection import connection
 from utils.setup import setup
-from utils.cli import parse_cli
+from utils.cli_setup import parse_cli
 import sys
 
 
